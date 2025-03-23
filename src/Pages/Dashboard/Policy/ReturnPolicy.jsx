@@ -1,12 +1,26 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import JoditEditor from "jodit-react";
+import { usePolicyQuery } from "../../../redux/apiSlices/policySlice";
 
 function ReturnPolicy() {
   const editor = useRef(null);
-  const [content, setContent] = useState("");
+  const [content, setContent] = useState("Return Policy");
+  const { data: returnPolicy } = usePolicyQuery();
+
+  // Set content when policy data is available
+  useEffect(() => {
+    if (returnPolicy?.data?.privacyPolicy) {
+      setContent(returnPolicy.data.support);
+    }
+  }, [returnPolicy]); // Only run when `returnPolicy` changes
 
   const handleUpdate = (newContent) => {
     setContent(newContent);
+  };
+
+  const handleSave = () => {
+    console.log(content); // Save logic should go here
+    // Optionally, you can call an API to save the updated content.
   };
 
   return (
