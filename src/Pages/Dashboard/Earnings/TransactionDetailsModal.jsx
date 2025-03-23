@@ -1,9 +1,7 @@
 import React from "react";
 import { Modal, ConfigProvider } from "antd";
-import { SlCalender } from "react-icons/sl";
-import { MdCheckBoxOutlineBlank } from "react-icons/md";
-
-function TransactionDetailsModal({ isModalOpen, setIsModalOpen }) {
+import moment from "moment";
+function TransactionDetailsModal({ isModalOpen, setIsModalOpen, transaction }) {
   const handleOk = () => {
     setIsModalOpen(false);
   };
@@ -25,16 +23,13 @@ function TransactionDetailsModal({ isModalOpen, setIsModalOpen }) {
           Form: {
             labelColor: "#ffffff",
           },
-          Table: {},
         },
       }}
     >
       <Modal
-        // title="View Details"
         open={isModalOpen}
         onOk={handleOk}
         width={500}
-        height={1000}
         onCancel={handleCancel}
         footer={null}
       >
@@ -42,25 +37,34 @@ function TransactionDetailsModal({ isModalOpen, setIsModalOpen }) {
           <h1 className="w-full mb-8 flex items-center justify-center text-white text-2xl font-sans">
             Transaction Details
           </h1>
-          <div className="flex flex-col items-center justify-center w-full h-24 gap-2 ">
-            <div className="w-[80%] flex items-center justify-between ">
-              <p>Transaction ID: </p>
-              <p>#12345678</p>
+          {transaction ? (
+            <div className="flex flex-col items-center justify-center w-full h-24 gap-2">
+              <div className="w-[80%] flex items-center justify-between">
+                <p>Transaction ID:</p>
+                <p>{transaction._id}</p>
+              </div>
+              <div className="w-[80%] flex items-center justify-between">
+                <p>Date:</p>
+                <p>
+                  {moment(transaction.createdAt).format("YYYY-MM-DD HH:mm")}
+                </p>
+              </div>
+              <div className="w-[80%] flex items-center justify-between">
+                <p>Email:</p>
+                <p>{transaction.email}</p>
+              </div>
+              <div className="w-[80%] flex items-center justify-between">
+                <p>Order ID:</p>
+                <p>{transaction.orderNumber || "N/A"}</p>
+              </div>
+              <div className="w-[80%] flex items-center justify-between">
+                <p>Transaction Amount:</p>
+                <p>${transaction.earning.toLocaleString()}</p>
+              </div>
             </div>
-            <div className="w-[80%] flex items-center justify-between  ">
-              <p>Date: </p>
-              <p>01-24-2024</p>
-            </div>
-            <div className="w-[80%] flex items-center justify-between  ">
-              <p>Email: </p>
-              <p>email@gmail.com</p>
-            </div>
-
-            <div className="w-[80%] flex items-center justify-between ">
-              <p>Transaction amount: </p>
-              <p>$260</p>
-            </div>
-          </div>
+          ) : (
+            <div className="text-white">No transaction selected.</div>
+          )}
         </div>
       </Modal>
     </ConfigProvider>

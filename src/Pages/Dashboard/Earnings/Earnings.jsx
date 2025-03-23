@@ -1,49 +1,69 @@
 import React, { useState } from "react";
 import { LuArrowLeftRight } from "react-icons/lu";
-import { Table, ConfigProvider } from "antd";
+import { Table, ConfigProvider, Spin } from "antd";
 import { IoEye } from "react-icons/io5";
 import TransactionDetailsModal from "./TransactionDetailsModal";
+import { useEarningQuery } from "../../../redux/apiSlices/earningSlice";
+import moment from "moment";
+
 function Earnings() {
+  const { data: earningData, isError, isLoading } = useEarningQuery();
+
+  // Calculate total earnings
+  const totalEarnings =
+    earningData?.data?.earnings?.reduce((acc, item) => acc + item.earning, 0) ||
+    0;
+
   return (
     <div className="px-3">
-      <div className="w-[576px] h-14 flex justify-between my-4">
-        <div className="bg-[#121314] text-white flex items-center justify-evenly w-[278px] h-full rounded-lg">
+      <div className="w-gull h-14 flex gap-6 my-4">
+        <div className="bg-[#121314] text-white flex items-center justify-evenly w-[30%] h-full rounded-lg">
           <LuArrowLeftRight size={25} />
           Today's Earning
-          <span>${3587}</span>
+          <span>${totalEarnings.toLocaleString()}</span>
         </div>
-        <div className="bg-[#121314] text-white flex items-center justify-evenly w-[278px] h-full rounded-lg">
+        <div className="bg-[#121314] text-white flex items-center justify-evenly w-[30%] h-full rounded-lg">
           <LuArrowLeftRight size={25} />
-          Today's Earning
-          <span>${3587}</span>
+          Total Earnings
+          <span>${totalEarnings.toLocaleString()}</span>
         </div>
       </div>
-      <EarningsTable />
+      <EarningsTable
+        earningData={earningData}
+        isLoading={isLoading}
+        isError={isError}
+      />
     </div>
   );
 }
 
 export default Earnings;
 
-const EarningsTable = () => {
+const EarningsTable = ({ earningData, isLoading, isError }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedTransaction, setSelectedTransaction] = useState(null); // Store selected row data
+
   const showModal = (record) => {
-    setIsModalOpen(true); // Open modal
+    setSelectedTransaction(record);
+    setIsModalOpen(true);
   };
+
   const columns = [
     {
       title: "Serial",
       dataIndex: "serial",
       key: "serial",
+      render: (_, __, index) => index + 1,
     },
     {
-      title: "Order Id",
-      dataIndex: "orderid",
-      key: "productname",
+      title: "Order ID",
+      dataIndex: "orderNumber",
+      key: "orderNumber",
+      render: (text) => text || "N/A",
     },
     {
-      title: "Trnx Id",
-      dataIndex: "trnxid",
+      title: "Transaction ID",
+      dataIndex: "_id",
       key: "trnxid",
     },
     {
@@ -53,18 +73,15 @@ const EarningsTable = () => {
     },
     {
       title: "Date",
-      dataIndex: "date",
+      dataIndex: "createdAt",
       key: "date",
+      render: (text) => moment(text).format("YYYY-MM-DD HH:mm"),
     },
     {
-      title: "Ammount",
-      dataIndex: "ammount",
-      key: "ammount",
-    },
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
+      title: "Amount",
+      dataIndex: "earning",
+      key: "earning",
+      render: (text) => `$${text.toLocaleString()}`,
     },
     {
       title: "Action",
@@ -75,7 +92,7 @@ const EarningsTable = () => {
           className="hover:text-[#a11d26]"
           onClick={(e) => {
             e.preventDefault();
-            showModal(record); // Pass row data
+            showModal(record);
           }}
         >
           <IoEye size={24} />
@@ -83,89 +100,47 @@ const EarningsTable = () => {
       ),
     },
   ];
+
+  const dataSource =
+    earningData?.data?.earnings?.map((item, index) => ({
+      ...item,
+      serial: index + 1,
+    })) || [];
+
   return (
     <div>
-      <ConfigProvider
-        theme={{
-          components: {
-            Table: {
-              headerBg: "#575858",
-              headerSplitColor: "none",
-              headerColor: "white",
-              borderColor: "#A3A3A3",
-              colorBgContainer: "#3a3a3a",
-              rowHoverBg: "#4a4a4a",
-              colorText: "white",
-            },
-          },
-        }}
-      >
-        <div className="custom-table">
-          <Table columns={columns} dataSource={rawData} pagination />
+      {isLoading ? (
+        <div className="flex justify-center items-center h-64">
+          <Spin size="large" />
         </div>
-      </ConfigProvider>
+      ) : isError ? (
+        <div className="text-center text-red-500">Error loading data.</div>
+      ) : (
+        <ConfigProvider
+          theme={{
+            components: {
+              Table: {
+                headerBg: "#575858",
+                headerSplitColor: "none",
+                headerColor: "white",
+                borderColor: "#A3A3A3",
+                colorBgContainer: "#3a3a3a",
+                rowHoverBg: "#4a4a4a",
+                colorText: "white",
+              },
+            },
+          }}
+        >
+          <div className="custom-table">
+            <Table columns={columns} dataSource={dataSource} pagination />
+          </div>
+        </ConfigProvider>
+      )}
       <TransactionDetailsModal
         isModalOpen={isModalOpen}
         setIsModalOpen={setIsModalOpen}
+        transaction={selectedTransaction} // Pass selected transaction data
       />
     </div>
   );
 };
-
-const rawData = [
-  {
-    key: "1",
-    serial: "001",
-    orderid: 7858,
-    trnxid: "skdgflg45",
-    email: "test@gmail.com",
-    date: "2024-02-20",
-    ammount: "$25.99",
-    status: "Delivered",
-    pic: "https://via.placeholder.com/50",
-  },
-  {
-    key: "2",
-    serial: "002",
-    orderid: 7858,
-    trnxid: "skdgflg45",
-    email: "test@gmail.com",
-    date: "2024-02-18",
-    ammount: "$79.99",
-    status: "Pending",
-    pic: "https://via.placeholder.com/50",
-  },
-  {
-    key: "3",
-    serial: "003",
-    orderid: 7858,
-    trnxid: "skdgflg45",
-    email: "test@gmail.com",
-    date: "2024-02-15",
-    ammount: "$49.99",
-    status: "Shipped",
-    pic: "https://via.placeholder.com/50",
-  },
-  {
-    key: "4",
-    serial: "004",
-    orderid: 7858,
-    trnxid: "skdgflg45",
-    email: "test@gmail.com",
-    date: "2024-02-12",
-    ammount: "$129.99",
-    status: "Processing",
-    pic: "https://via.placeholder.com/50",
-  },
-  {
-    key: "5",
-    serial: "005",
-    orderid: 7858,
-    trnxid: "skdgflg45",
-    email: "test@gmail.com",
-    date: "2024-02-10",
-    ammount: "$299.99",
-    status: "Delivered",
-    pic: "https://via.placeholder.com/50",
-  },
-];

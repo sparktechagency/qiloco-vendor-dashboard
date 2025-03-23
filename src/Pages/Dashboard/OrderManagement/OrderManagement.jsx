@@ -1,219 +1,78 @@
-// import React, { useState } from "react";
-// import { Table, Avatar, ConfigProvider, Button, Dropdown, Menu } from "antd";
-// import { FiPlusCircle } from "react-icons/fi";
-// import { IoEye } from "react-icons/io5";
-// import AddProductModal from "./ConfirmDeliveryModal";
-// import Selects from "./Selects";
-// function OrderManagement() {
-//   const dataSource = rawData.map((item) => ({
-//     ...item,
-//     serial: `#${item.serial}`,
-//   }));
-//   const [selected, setSelected] = useState("All");
-//   const [isModalOpen, setIsModalOpen] = useState(false);
-
-//   const filteredData = rawData
-//     .filter((item) => selected === "All" || item.filter === selected)
-//     .map((item) => ({
-//       ...item,
-//       serial: `#${item.serial}`,
-//     }));
-
-//   const showModal = () => {
-//     setIsModalOpen(true);
-//   };
-
-//   const handleChange = (value) => {
-//     console.log(`selected ${value}`);
-//   };
-
-//   const columns = [
-//     {
-//       title: "Sl#",
-//       dataIndex: "serial",
-//       key: "serial",
-//     },
-//     {
-//       title: "Product Name",
-//       dataIndex: "productname",
-//       key: "productname",
-//       render: (_, record) => (
-//         <div className="flex items-center gap-2">
-//           <Avatar shape="square" size="default" src={record.pic} />
-//           <span>{record.productname}</span>
-//         </div>
-//       ),
-//     },
-//     {
-//       title: "Customer Name",
-//       dataIndex: "customerName",
-//       key: "customerName",
-//     },
-//     {
-//       title: "Date",
-//       dataIndex: "date",
-//       key: "date",
-//     },
-//     {
-//       title: "Amount",
-//       dataIndex: "ammount",
-//       key: "ammount",
-//     },
-//     {
-//       title: "Status",
-//       dataIndex: "status",
-//       key: "status",
-//       render: (status) => {
-//         let color = "text-white";
-//         if (status === "Pending") color = "text-yellow-400";
-//         if (status === "Processing") color = "text-red-500";
-//         if (status === "Delivered") color = "text-green-500";
-
-//         return <span className={`${color} font-semibold`}>{status}</span>;
-//       },
-//     },
-//     {
-//       title: "Action",
-//       key: "action",
-//       render: (_, record) => {
-//         const menu = (
-//           <Menu>
-//             <Menu.Item key="1">Preparing</Menu.Item>
-//             <Menu.Item key="2">Shipped</Menu.Item>
-//             <Menu.Item key="3">Delivered</Menu.Item>
-//           </Menu>
-//         );
-
-//         return (
-//           <div className="flex items-center gap-2">
-//             <Button className="bg-gray-700 text-white px-3 py-1 rounded">
-//               View details
-//             </Button>
-//             <Dropdown overlay={menu} trigger={["click"]}>
-//               <Button className="bg-gray-700 text-white px-3 py-1 rounded">
-//                 Preparing ▼
-//               </Button>
-//             </Dropdown>
-//           </div>
-//         );
-//       },
-//     },
-//   ];
-
-//   return (
-//     <div className="px-3 py-4">
-//       <ConfigProvider
-//         theme={{
-//           components: {
-//             Table: {
-//               headerBg: "#575858",
-//               headerSplitColor: "none",
-//               headerColor: "white",
-//               borderColor: "#A3A3A3",
-//               colorBgContainer: "#3a3a3a",
-//               rowHoverBg: "#4a4a4a",
-//               colorText: "white",
-//             },
-//           },
-//         }}
-//       >
-//         <div className="custom-table">
-//           <Table
-//             dataSource={filteredData}
-//             columns={columns}
-//             pagination={true}
-
-//             // rowClassName={() => "bg-gray-700 text-white"}
-//           />
-//         </div>
-//         <AddProductModal
-//           isModalOpen={isModalOpen}
-//           setIsModalOpen={setIsModalOpen}
-//         />
-//       </ConfigProvider>
-//     </div>
-//   );
-// }
-
-// export default OrderManagement;
-
-// const rawData = [
-//   {
-//     key: "1",
-//     serial: "001",
-//     productname: "Wireless Mouse",
-//     customerName: "Mike Johnson",
-//     date: "2024-03-01",
-//     ammount: "$25.99",
-//     status: "Delivered",
-//     pic: "https://via.placeholder.com/40", // Example placeholder image URL
-//     filter: "Vice City",
-//   },
-//   {
-//     key: "2",
-//     serial: "002",
-//     productname: "Mechanical Keyboard",
-//     customerName: "John Doe",
-//     date: "2024-03-02",
-//     ammount: "$79.99",
-//     status: "Pending",
-//     pic: "https://via.placeholder.com/40",
-//     filter: "Zkittles",
-//   },
-//   {
-//     key: "3",
-//     serial: "003",
-//     productname: "Gaming Headset",
-//     customerName: "Sarah Lee",
-//     date: "2024-03-03",
-//     ammount: "$59.99",
-//     status: "Shipped",
-//     pic: "https://via.placeholder.com/40",
-//     filter: "Zkittles",
-//   },
-//   {
-//     key: "4",
-//     serial: "004",
-//     productname: "USB-C Docking Station",
-//     customerName: "Emily Smith",
-//     date: "2024-03-04",
-//     ammount: "$120.00",
-//     status: "Processing",
-//     pic: "https://via.placeholder.com/40",
-//     filter: "Vice City",
-//   },
-// ];
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Table, Avatar, ConfigProvider, Button, Dropdown, Menu } from "antd";
-import { CaretDownOutlined, DownOutlined } from "@ant-design/icons";
-import { IoEye } from "react-icons/io5";
-import AddProductModal from "./ConfirmDeliveryModal";
+import { DownOutlined } from "@ant-design/icons";
+import {
+  useGetOrderQuery,
+  useUpdateOrderStatusMutation,
+} from "../../../redux/apiSlices/orderSlice";
+
+import OrderDetailsModal from "./OrderDetailsModal";
+import Spinner from "../../../components/common/Spinner";
 
 function OrderManagement() {
   const [selected, setSelected] = useState("All");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [data, setData] = useState(
-    rawData.map((item) => ({
-      ...item,
-      serial: `#${item.serial}`,
-    }))
-  );
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [data, setData] = useState([]);
 
-  const showModal = () => {
+  // Fetch the orders and the mutation hook
+  const { data: orderList, isLoading } = useGetOrderQuery();
+  const [updateOrderStatus, { isLoading: isUpdating }] =
+    useUpdateOrderStatusMutation();
+
+  useEffect(() => {
+    if (orderList?.data?.orders) {
+      const formattedData = orderList.data.orders.map((order, index) => ({
+        key: order._id,
+        serial: `#${index + 1}`,
+        productname: order.products?.[0]?.productName || "N/A",
+        customerName: order.customerName || "Unknown",
+        date: new Date(order.createdAt).toLocaleString(),
+        amount: `$${order.totalPrice.toFixed(2)}`,
+        status:
+          order.deliveryStatus.charAt(0).toUpperCase() +
+          order.deliveryStatus.slice(1), // Capitalize first letter
+        fullData: order, // Store the original order data
+      }));
+      setData(formattedData);
+    }
+  }, [orderList]);
+
+  const showModal = (order) => {
+    // Send the original order data to the modal
+    setSelectedOrder(order.fullData);
     setIsModalOpen(true);
   };
 
-  const handleStatusChange = (key, newStatus) => {
-    setData((prevData) =>
-      prevData.map((item) =>
-        item.key === key ? { ...item, status: newStatus } : item
-      )
-    );
+  const handleStatusChange = async (key, newStatus) => {
+    // Find the selected order from the data
+    const selectedOrder = data.find((item) => item.key === key);
+
+    // Make sure we are updating a valid order
+    if (selectedOrder) {
+      try {
+        // Call the mutation to update the order status on the server
+        const response = await updateOrderStatus({
+          status: newStatus, // This will be the new status like 'delivered'
+          id: selectedOrder.key, // Pass the order key (ID)
+        }).unwrap();
+
+        console.log(response);
+
+        // After successful update, update the local state to reflect the new status
+        setData((prevData) =>
+          prevData.map((item) =>
+            item.key === key ? { ...item, status: newStatus } : item
+          )
+        );
+      } catch (error) {
+        console.error("Failed to update order status:", error);
+      }
+    }
   };
 
   const filteredData = data.filter(
-    (item) => selected === "All" || item.filter === selected
+    (item) => selected === "All" || item.status === selected
   );
 
   const columns = [
@@ -228,7 +87,11 @@ function OrderManagement() {
       key: "productname",
       render: (_, record) => (
         <div className="flex items-center gap-2">
-          <Avatar shape="square" size="default" src={record.pic} />
+          <Avatar
+            shape="square"
+            size="default"
+            src="https://via.placeholder.com/50"
+          />
           <span>{record.productname}</span>
         </div>
       ),
@@ -245,29 +108,30 @@ function OrderManagement() {
     },
     {
       title: "Amount",
-      dataIndex: "ammount",
-      key: "ammount",
+      dataIndex: "amount",
+      key: "amount",
     },
     {
       title: "Status",
       dataIndex: "status",
       key: "status",
       render: (status) => {
-        let color = "text-white";
-        if (status === "Pending")
-          color =
-            "text-yellow-400 border border-yellow-400 bg-yellow-950  font-[300] text-[14px]  rounded-lg px-3 py-1";
-        if (status === "Processing")
-          color =
-            "text-red-400 border border-red-400  bg-red-950 font-[300] text-[14px]  rounded-lg px-3 py-1";
-        if (status === "Shipped")
-          color =
-            "text-sky-400 border border-sky-400 bg-sky-950 font-[300] text-[14px]  rounded-lg px-3 py-1";
-        if (status === "Delivered")
-          color =
-            "text-teal-400 border border-teal-400 bg-teal-950 font-[300] text-[14px]  rounded-lg px-3 py-1";
+        const statusColors = {
+          Pending: "text-yellow-400 border border-yellow-400 bg-yellow-950",
+          Processing: "text-red-400 border border-red-400 bg-red-950",
+          Shipped: "text-sky-400 border border-sky-400 bg-sky-950",
+          Delivered: "text-teal-400 border border-teal-400 bg-teal-950",
+        };
 
-        return <span className={`${color} font-semibold`}>{status}</span>;
+        return (
+          <span
+            className={`${
+              statusColors[status] || "text-white"
+            } font-semibold rounded-lg px-3 py-1`}
+          >
+            {isLoading ? <Spinner /> : status}
+          </span>
+        );
       },
     },
     {
@@ -276,50 +140,26 @@ function OrderManagement() {
       render: (_, record) => {
         const menu = (
           <Menu onClick={({ key }) => handleStatusChange(record.key, key)}>
-            <Menu.Item key="Pending">Pending</Menu.Item>
-            <Menu.Item key="Processing">Processing</Menu.Item>
-            <Menu.Item key="Shipped">Shipped</Menu.Item>
-            <Menu.Item key="Delivered">Delivered</Menu.Item>
+            <Menu.Item key="pending">Pending</Menu.Item>
+            <Menu.Item key="processing">Processing</Menu.Item>
+            <Menu.Item key="canceled">Canceled</Menu.Item>
+            <Menu.Item key="delivered">Delivered</Menu.Item>
           </Menu>
         );
 
         return (
-          <div className="flex items-center gap-2 ">
-            <ConfigProvider
-              theme={{
-                components: {
-                  Button: {
-                    defaultActiveBorderColor: "none",
-                    defaultHoverBg: "none",
-                    defaultHoverBorderColor: "white",
-                    defaultHoverColor: "white",
-                    defaultActiveBg: "none",
-                    defaultActiveColor: "#a01d25",
-                    defaultShadow: "#a01d25",
-                  },
-                },
-              }}
+          <div className="flex items-center gap-2">
+            <Button
+              className="bg-transparent text-white rounded-lg"
+              onClick={() => showModal(record)}
             >
-              <Button
-                className="bg-transparent text-white  rounded-lg"
-                onClick={showModal}
-              >
-                View details
+              View details
+            </Button>
+            <Dropdown overlay={menu} trigger={["click"]}>
+              <Button className="bg-transparent text-white rounded">
+                {record.status} <DownOutlined />
               </Button>
-              <Dropdown
-                overlay={menu}
-                trigger={["click"]}
-                className="w-24 rounded-lg"
-              >
-                <Button
-                  className="bg-transparent text-white  rounded "
-                  icon={<DownOutlined />}
-                  iconPosition={"end"}
-                >
-                  {record.status}
-                </Button>
-              </Dropdown>
-            </ConfigProvider>
+            </Dropdown>
           </div>
         );
       },
@@ -343,63 +183,22 @@ function OrderManagement() {
           },
         }}
       >
-        <div className="custom-table">
-          <Table dataSource={filteredData} columns={columns} pagination />
-        </div>
-        <AddProductModal
-          isModalOpen={isModalOpen}
-          setIsModalOpen={setIsModalOpen}
+        <Table
+          dataSource={filteredData}
+          columns={columns}
+          pagination
+          loading={isLoading}
         />
+        {selectedOrder && (
+          <OrderDetailsModal
+            isModalOpen={isModalOpen}
+            setIsModalOpen={setIsModalOpen}
+            data={selectedOrder} // Changed from 'order' to 'data' to match the modal's prop name
+          />
+        )}
       </ConfigProvider>
     </div>
   );
 }
 
 export default OrderManagement;
-
-const rawData = [
-  {
-    key: "1",
-    serial: "001",
-    productname: "Wireless Mouse",
-    customerName: "Mike Johnson",
-    date: "2024-03-01",
-    ammount: "$25.99",
-    status: "Delivered",
-    pic: "https://via.placeholder.com/40",
-    filter: "Vice City",
-  },
-  {
-    key: "2",
-    serial: "002",
-    productname: "Mechanical Keyboard",
-    customerName: "John Doe",
-    date: "2024-03-02",
-    ammount: "$79.99",
-    status: "Pending",
-    pic: "https://via.placeholder.com/40",
-    filter: "Zkittles",
-  },
-  {
-    key: "3",
-    serial: "003",
-    productname: "Gaming Headset",
-    customerName: "Sarah Lee",
-    date: "2024-03-03",
-    ammount: "$59.99",
-    status: "Shipped",
-    pic: "https://via.placeholder.com/40",
-    filter: "Zkittles",
-  },
-  {
-    key: "4",
-    serial: "004",
-    productname: "USB-C Docking Station",
-    customerName: "Emily Smith",
-    date: "2024-03-04",
-    ammount: "$120.00",
-    status: "Processing",
-    pic: "https://via.placeholder.com/40",
-    filter: "Vice City",
-  },
-];

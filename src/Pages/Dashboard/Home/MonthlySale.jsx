@@ -9,37 +9,30 @@ import {
   CartesianGrid,
 } from "recharts";
 import { MdOutlineDateRange } from "react-icons/md";
-import { DatePicker } from "antd";
-
-function generateRandomData() {
-  return [
-    { name: "Jan", pv: getRandomPv(), amt: 2400 },
-    { name: "Feb", pv: getRandomPv(), amt: 2210 },
-    { name: "Mar", pv: getRandomPv(), amt: 2290 },
-    { name: "Apr", pv: getRandomPv(), amt: 2000 },
-    { name: "May", pv: getRandomPv(), amt: 2181 },
-    { name: "Jun", pv: getRandomPv(), amt: 2500 },
-    { name: "Jul", pv: getRandomPv(), amt: 2100 },
-    { name: "Aug", pv: getRandomPv(), amt: 2600 },
-    { name: "Sep", pv: getRandomPv(), amt: 2700 },
-    { name: "Oct", pv: getRandomPv(), amt: 2800 },
-    { name: "Nov", pv: getRandomPv(), amt: 3000 },
-    { name: "Dec", pv: getRandomPv(), amt: 3200 },
-  ];
-}
-
-function getRandomPv() {
-  return Math.floor(Math.random() * (10000 - 2000) + 2000);
-}
-
-const data = generateRandomData();
+import { DatePicker, Spin } from "antd";
+import { useGetPrdouctSalingDataQuery } from "../../../redux/apiSlices/overViewSlice";
 
 export default function MonthlySale() {
-  const [isDateSelected, setIsDateSelected] = useState(false);
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+
+  const {
+    data: productSellingOverview,
+    isError,
+    isLoading,
+  } = useGetPrdouctSalingDataQuery(selectedYear);
+
+  // Transform API response to match the chart format
+  const chartData =
+    productSellingOverview?.data?.formattedRevenueChart?.map((item) => ({
+      name: item.month.slice(0, 3), // Convert "January" to "Jan"
+      pv: item.totalRevenue,
+      amt: item.totalRevenue,
+    })) || [];
 
   const onChange = (date, dateString) => {
-    console.log(date, dateString);
-    setIsDateSelected(!!date); // Update state based on date selection
+    if (dateString) {
+      setSelectedYear(dateString); // Update selected year
+    }
   };
 
   return (
@@ -49,9 +42,11 @@ export default function MonthlySale() {
           <h2 className="text-lg font-medium text-white">
             Product Selling Overview
           </h2>
-          <div className="flex  text-white gap-5">
+          <div className="flex text-white gap-5">
             <p className="font-light text-white">Monthly growth</p>
-            <span className="font-bold">35.80%</span>
+            <span className="font-bold">
+              {productSellingOverview?.data?.totalGrowth || "0.00"}%
+            </span>
           </div>
         </div>
 
@@ -63,60 +58,58 @@ export default function MonthlySale() {
             <div
               className="rounded-full w-6 h-6 p-1 flex items-center justify-center"
               style={{
-                backgroundColor: isDateSelected ? "#232323" : "#dddddd",
+                backgroundColor: selectedYear ? "#232323" : "#dddddd",
               }}
             >
-              <MdOutlineDateRange
-                color={isDateSelected ? "white" : "#232323"}
-              />
+              <MdOutlineDateRange color={selectedYear ? "white" : "#232323"} />
             </div>
           }
         />
       </div>
 
-      <ResponsiveContainer width="100%" height={300}>
-        <BarChart
-          data={data}
-          margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-        >
-          <CartesianGrid
-            strokeDasharray="none"
-            strokeWidth={0.2}
-            vertical={false}
-          />
-          <XAxis dataKey="name" className="text-[16px]" />
-          <YAxis hide={false} className="text-[16px]" />
-          {/* <Tooltip cursor={{ fill: "transparent" }} /> */}
-          <Tooltip
-            content={<CustomTooltip />}
-            // cursor={{ fill: "transparent" }}
-            isAnimationActive={true}
-            cursor={false}
-          />
-
-          <Bar dataKey="pv" fill="#ffffff" barSize={35} radius={4} />
-        </BarChart>
-      </ResponsiveContainer>
+      {isLoading ? (
+        <div className="flex justify-center items-center h-64">
+          <Spin size="large" />
+        </div>
+      ) : isError ? (
+        <div className="text-center text-red-500">Error loading data.</div>
+      ) : (
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart
+            data={chartData}
+            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+          >
+            <CartesianGrid
+              strokeDasharray="none"
+              strokeWidth={0.2}
+              vertical={false}
+            />
+            <XAxis dataKey="name" className="text-[16px]" />
+            <YAxis hide={false} className="text-[16px]" />
+            <Tooltip content={<CustomTooltip />} cursor={false} />
+            <Bar dataKey="pv" fill="#ffffff" barSize={35} radius={4} />
+          </BarChart>
+        </ResponsiveContainer>
+      )}
     </>
   );
 }
 
-const CustomTooltip = ({ active, payload, label }) => {
+const CustomTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
     return (
-      <div className="relative flex items-center ml-0 ">
+      <div className="relative flex items-center ml-0">
         {/* Arrow (pointing left) */}
-        <div className="absolute w-0 h-0  border-t-8 border-t-transparent border-b-8 border-b-transparent border-r-8 border-r-prince -left-2"></div>
+        <div className="absolute w-0 h-0 border-t-8 border-t-transparent border-b-8 border-b-transparent border-r-8 border-r-prince -left-1.5"></div>
 
         {/* Tooltip Content */}
-        <div className="bg-white p-2 text-black rounded shadow-md ">
+        <div className="bg-white p-2 text-black rounded shadow-md">
           {payload.map((pld, index) => (
-            <div key={index}>{pld.value}K</div>
+            <div key={index}>${pld.value}K</div>
           ))}
         </div>
       </div>
     );
   }
-
   return null;
 };
