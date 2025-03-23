@@ -20,15 +20,15 @@ const ChangePassword = () => {
       // Log the complete response to console
       console.log("Password change response:", response);
 
-      if (response.status) {
-        toast.success(response.message);
-        form.resetFields();
-        // Navigate to login page after successful password change
-        navigate("/auth/login");
-      }
+      // if (response.status) {
+      //   toast.success(response.message);
+      //   form.resetFields();
+      //   // Navigate to login page after successful password change
+      //   navigate("/auth/login");
+      // }
     } catch (error) {
       console.error("API Error:", error);
-      toast.error(error?.data?.message || "Failed to update password");
+      // toast.error(error?.data?.message || "Failed to update password");
     }
   };
 
