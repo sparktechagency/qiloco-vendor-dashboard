@@ -16,6 +16,7 @@ import {
   useCreateProductMutation,
   useUpdateProductMutation,
 } from "../../../redux/apiSlices/productSlice";
+import { getImageUrl } from "../../../components/common/ImageUrl";
 
 function ProductModal({ isModalOpen, setIsModalOpen, editProduct = null }) {
   const [form] = Form.useForm();
@@ -199,7 +200,7 @@ function ProductModal({ isModalOpen, setIsModalOpen, editProduct = null }) {
 
         const response = await updateProduct({
           id: editProduct.id,
-          data: formData,
+          formData,
         }).unwrap();
 
         console.log("API response:", response);
@@ -539,8 +540,10 @@ function ProductModal({ isModalOpen, setIsModalOpen, editProduct = null }) {
                       <Image
                         src={
                           file.isExisting
-                            ? file.url
-                            : URL.createObjectURL(file.originFileObj)
+                            ? getImageUrl(file.url)
+                            : getImageUrl(
+                                URL.createObjectURL(file.originFileObj)
+                              )
                         }
                         width={60}
                         height={60}

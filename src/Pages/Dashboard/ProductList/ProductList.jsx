@@ -284,11 +284,11 @@ const columns = (
     dataIndex: "productScent",
     key: "productScent",
   },
-  {
-    title: "Description",
-    dataIndex: "productDescription",
-    key: "productDescription",
-  },
+  // {
+  //   title: "Description",
+  //   dataIndex: "productDescription",
+  //   key: "productDescription",
+  // },
   {
     title: "Created At",
     dataIndex: "createdAt",
