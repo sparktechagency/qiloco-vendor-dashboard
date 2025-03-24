@@ -59,24 +59,6 @@ function ProductList() {
     setIsModalOpen(true);
   };
 
-  // Handle successful product update
-  // const handleProductUpdate = async (updatedProduct) => {
-  //   console.log(updatedProduct);
-  //   try {
-  //     // Match the structure expected by your slice
-  //     await updateProduct({
-  //       id: updatedProduct.id,
-  //       updatedData: updatedProduct, // Changed from 'data' to 'updatedData' to match your slice
-  //     }).unwrap();
-  //     message.success("Product updated successfully");
-  //     setIsModalOpen(false);
-  //   } catch (error) {
-  //     message.error(
-  //       "Failed to update product: " + (error.message || "Unknown error")
-  //     );
-  //   }
-  // };
-
   // Show Product Details Modal
   const showDetailsModal = (product) => {
     setSelectedProduct(product);

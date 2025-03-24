@@ -306,7 +306,9 @@ function ProductModal({ isModalOpen, setIsModalOpen, editProduct = null }) {
               >
                 <Input
                   placeholder="Enter your product name"
-                  className="border-none h-9"
+                  className={`border-none h-10 ${
+                    isEditMode ? "text-black" : "text-white"
+                  }`}
                   style={{
                     background: isEditMode ? "#f0f5ff" : "black",
                   }}
@@ -324,9 +326,10 @@ function ProductModal({ isModalOpen, setIsModalOpen, editProduct = null }) {
               >
                 <Input.TextArea
                   placeholder="Write product description"
-                  className="border-none"
+                  className="border-none "
                   style={{
                     background: isEditMode ? "#f0f5ff" : "black",
+                    color: isEditMode ? "black" : "white",
                   }}
                   onFocus={() => setFocusedField("productDescription")}
                   onBlur={() => setFocusedField(null)}
@@ -338,16 +341,36 @@ function ProductModal({ isModalOpen, setIsModalOpen, editProduct = null }) {
                 name="productPrice"
                 rules={[{ required: true, message: "Product Price required!" }]}
               >
-                <InputNumber
+                <Input
+                  type="number"
                   placeholder="Enter your product price"
                   controls={false}
-                  className="border-none h-9 w-full flex items-center"
+                  className="border-none h-10 w-full text-white flex items-center"
                   style={{
                     background: isEditMode ? "#f0f5ff" : "black",
+                    colorText: isEditMode ? "black" : "white",
                   }}
                   onFocus={() => setFocusedField("productPrice")}
                   onBlur={() => setFocusedField(null)}
                 />
+                {/* <Input
+                  type="number"
+                  placeholder="Enter your product price"
+                  controls={false} // Note: `controls` is not a valid prop for Ant Design Input
+                  className="border-none h-9 w-full flex items-center"
+                  style={{
+                    background: isEditMode ? "#f0f5ff" : "black",
+                    color: isEditMode ? "black" : "white",
+                  }}
+                  onFocus={() => setFocusedField("productPrice")}
+                  onBlur={() => setFocusedField(null)}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (/^\d*\.?\d*$/.test(value)) {
+                      setProductPrice(value); // Ensure the state only stores numbers
+                    }
+                  }}
+                /> */}
               </Form.Item>
 
               <Form.Item
@@ -358,7 +381,7 @@ function ProductModal({ isModalOpen, setIsModalOpen, editProduct = null }) {
                 ]}
               >
                 <Select
-                  className="w-full h-9"
+                  className="w-full  flex items-center"
                   allowClear
                   options={[
                     {
@@ -382,8 +405,11 @@ function ProductModal({ isModalOpen, setIsModalOpen, editProduct = null }) {
                 ]}
               >
                 <Input
+                  type="number"
                   placeholder="2 pc"
-                  className="border-none h-9"
+                  className={`border-none h-10 ${
+                    isEditMode ? "text-black" : "text-white"
+                  }`}
                   style={{
                     background: isEditMode ? "#f0f5ff" : "black",
                   }}
@@ -406,7 +432,9 @@ function ProductModal({ isModalOpen, setIsModalOpen, editProduct = null }) {
                 <Select
                   mode="multiple"
                   placeholder="[Tag]"
-                  className="border-none"
+                  className={`border-none h-10 ${
+                    isEditMode ? "text-black" : "text-white"
+                  }`}
                   style={{
                     background: isEditMode ? "#f0f5ff" : "black",
                   }}
@@ -426,7 +454,9 @@ function ProductModal({ isModalOpen, setIsModalOpen, editProduct = null }) {
               <Form.Item label="Potency" name="productPotency">
                 <Input
                   placeholder="Enter your Product Potency"
-                  className="border-none h-9"
+                  className={`border-none h-10 ${
+                    isEditMode ? "text-black" : "text-white"
+                  }`}
                   style={{
                     background: isEditMode ? "#f0f5ff" : "black",
                   }}
@@ -445,7 +475,9 @@ function ProductModal({ isModalOpen, setIsModalOpen, editProduct = null }) {
               >
                 <Input
                   placeholder="Enter your Product Genetics"
-                  className="border-none h-9"
+                  className={`border-none h-10 ${
+                    isEditMode ? "text-black" : "text-white"
+                  }`}
                   style={{
                     background: isEditMode ? "#f0f5ff" : "black",
                   }}
@@ -461,7 +493,9 @@ function ProductModal({ isModalOpen, setIsModalOpen, editProduct = null }) {
               >
                 <Input
                   placeholder="Enter your Product Origin"
-                  className="border-none h-9"
+                  className={`border-none h-10 ${
+                    isEditMode ? "text-black" : "text-white"
+                  }`}
                   style={{
                     background: isEditMode ? "#f0f5ff" : "black",
                   }}
@@ -477,7 +511,9 @@ function ProductModal({ isModalOpen, setIsModalOpen, editProduct = null }) {
               >
                 <Input
                   placeholder="Enter your Product Type"
-                  className="border-none h-9"
+                  className={`border-none h-10 mt-3 ${
+                    isEditMode ? "text-black" : "text-white"
+                  }`}
                   style={{
                     background: isEditMode ? "#f0f5ff" : "black",
                   }}
@@ -493,7 +529,9 @@ function ProductModal({ isModalOpen, setIsModalOpen, editProduct = null }) {
               >
                 <Input
                   placeholder="Enter your Product Scent"
-                  className="border-none h-9"
+                  className={`border-none h-10 ${
+                    isEditMode ? "text-black" : "text-white"
+                  }`}
                   style={{
                     background: isEditMode ? "#f0f5ff" : "black",
                   }}
