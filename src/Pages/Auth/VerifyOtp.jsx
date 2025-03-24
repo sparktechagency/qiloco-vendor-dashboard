@@ -1,19 +1,79 @@
 import { Button, Form, Typography } from "antd";
 import React, { useState } from "react";
 import OTPInput from "react-otp-input";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import {
+  useForgotPasswordMutation,
+  useOtpVerifyMutation,
+} from "../../redux/apiSlices/authSlice";
 const { Text } = Typography;
 
 const VerifyOtp = () => {
   const navigate = useNavigate();
-  const [otp, setOtp] = useState();
+  const location = useLocation();
   const email = new URLSearchParams(location.search).get("email");
 
-  const onFinish = async (values) => {
-    navigate(`/auth/reset-password?email=${email}`);
+  const [otp, setOtp] = useState("");
+  const [otpVerify, { isLoading }] = useOtpVerifyMutation();
+  const [forgotPassword, { isLoading: resendLoading }] =
+    useForgotPasswordMutation();
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const handleOtpChange = (value) => {
+    console.log("Current OTP input:", value);
+    setOtp(value);
   };
 
-  const handleResendEmail = async () => {};
+  const onFinish = async () => {
+    console.log("Raw OTP string:", otp);
+
+    if (otp.length !== 4) {
+      setErrorMessage("OTP must be 4 digits");
+      return;
+    }
+
+    if (!email) {
+      setErrorMessage("Email is missing. Please try again.");
+      return;
+    }
+
+    try {
+      const response = await otpVerify({
+        email,
+        oneTimeCode: Number(otp), // ✅ Convert OTP to number before sending
+      }).unwrap();
+
+      console.log("OTP Verification Success:", response);
+
+      if (response?.success) {
+        localStorage.setItem("verifyToken", response?.data?.verifyToken);
+        navigate(`/auth/reset-password?email=${email}`);
+      } else {
+        setErrorMessage(response?.message || "OTP verification failed.");
+      }
+    } catch (err) {
+      console.error("OTP Verification Failed:", err?.data?.message || err);
+      setErrorMessage(
+        err?.data?.message || "Something went wrong. Please try again."
+      );
+    }
+  };
+
+  const handleResendEmail = async () => {
+    if (!email) {
+      setErrorMessage("Email is missing. Cannot resend OTP.");
+      return;
+    }
+
+    try {
+      await forgotPassword({ email }).unwrap();
+      console.log("OTP Resent Successfully");
+      setErrorMessage(""); // Clear previous errors
+    } catch (err) {
+      console.error("OTP Resend Failed:", err?.data?.message || err);
+      setErrorMessage(err?.data?.message || "Failed to resend OTP.");
+    }
+  };
 
   return (
     <div>

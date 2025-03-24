@@ -9,49 +9,22 @@ function PrivacyPolicy() {
   const editor = useRef(null);
   const [content, setContent] = useState("Privacy Policy");
 
-  // Fetch the policy data using usePolicyQuery hook
+  // Fetch policy data
   const { data: policyData } = usePolicyQuery();
 
-  // Mutation hook to update the policy
-  const [updatePolicy] = useUpdatePolicyMutation();
-
-  // Set content when policy data is available
+  // Set initial content when policy data loads
   useEffect(() => {
     if (policyData?.data?.privacyPolicy) {
       setContent(policyData.data.privacyPolicy);
     }
-  }, [policyData]); // Only run when `policyData` changes
-
-  const handleUpdate = (newContent) => {
-    setContent(newContent);
-  };
-
-  const handleSave = async () => {
-    try {
-      const updatedData = { privacyPolicy: content };
-      // Call the updatePolicy mutation with the new content
-      const response = await updatePolicy({
-        id: policyData?.data?.id,
-        updatedData,
-      }).unwrap();
-      console.log(response);
-      // Handle success or failure
-      if (response.success) {
-        console.log("Policy updated successfully");
-      } else {
-        console.error("Failed to update policy");
-      }
-    } catch (error) {
-      console.error("Save failed:", error);
-    }
-  };
+  }, [policyData]);
 
   return (
     <div className="px-3 py-4">
-      <JoditEditor
+      {/* <JoditEditor
         ref={editor}
         value={content}
-        onBlur={handleUpdate} // Update content on blur
+        onBlur={handleUpdate} // Update state on blur
         config={{
           theme: "dark",
           style: {
@@ -66,7 +39,6 @@ function PrivacyPolicy() {
           allowResizeX: false,
           allowResizeY: false,
           statusbar: false,
-          // Reduce button count to improve performance
           buttons: [
             "source",
             "|",
@@ -102,13 +74,22 @@ function PrivacyPolicy() {
           spellcheck: false,
           iframe: false,
         }}
-      />
-      <button
+      /> */}
+      {/* <button
         className="w-full bg-quilocoD hover:bg-quilocoD/90 text-white text-[24px] rounded-lg h-12 my-4"
         onClick={handleSave}
+        disabled={isLoading}
       >
-        Save
-      </button>
+        {isLoading ? "Saving..." : "Save"}
+      </button> */}
+      <div className="px-3 py-4">
+        <div
+          // className="policy-content"
+          dangerouslySetInnerHTML={{ __html: content }}
+        />
+        {/* {content} */}
+      </div>
+      );
     </div>
   );
 }

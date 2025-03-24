@@ -1,12 +1,22 @@
 import { Button, Form, Input, ConfigProvider } from "antd";
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useForgotPasswordMutation } from "../../redux/apiSlices/authSlice";
 
 const ForgotPassword = () => {
+  const [forgotPassword, { isLoading }] = useForgotPasswordMutation();
   const navigate = useNavigate();
 
   const onFinish = async (values) => {
-    navigate(`/auth/verify-otp?email=${values?.email}`);
+    console.log("Submitting email:", values.email);
+    try {
+      const response = await forgotPassword({ email: values.email }).unwrap();
+      console.log("Forgot Password Success:", response);
+      // localStorage.setItem("forgetToken", response?.data?.forgetToken);
+      navigate(`/auth/verify-otp?email=${values.email}`);
+    } catch (err) {
+      console.error("Forgot Password Error:", err?.data?.message || err);
+    }
   };
 
   return (

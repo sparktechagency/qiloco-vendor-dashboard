@@ -7,12 +7,18 @@ import { HiMiniPencil } from "react-icons/hi2";
 import { imageUrl } from "../../../redux/api/baseApi";
 
 import { useUser } from "../../../provider/User";
-import { useUpdateProfileMutation } from "../../../redux/apiSlices/pofileSlice";
+import {
+  useProfileQuery,
+  useUpdateProfileMutation,
+} from "../../../redux/apiSlices/pofileSlice";
 
 function Profile() {
+  const { data: profile, isLoading } = useProfileQuery();
   const [showButton, setShowButton] = useState(false);
   const [uploadedImage, setUploadedImage] = useState(null);
-  const { user } = useUser(); // Correctly get user from context
+  const user = profile?.data;
+
+  if (isLoading) <Spinner />;
 
   return (
     <ConfigProvider
@@ -106,7 +112,7 @@ const ProfileDetails = ({ showButton, setShowButton, user, uploadedImage }) => {
       form.setFieldsValue({
         name: user.name,
         email: user.email,
-        phone: user.mobileNumber,
+        phone: user.phoneNumber,
         role: user.role,
       });
     }

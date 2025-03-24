@@ -7,10 +7,15 @@ import { CgMenu } from "react-icons/cg";
 import { useLocation } from "react-router-dom";
 import NotificationPopover from "../../Pages/Dashboard/Notification/NotificationPopover";
 import { getImageUrl } from "../../components/common/ImageUrl";
+import { useProfileQuery } from "../../redux/apiSlices/pofileSlice";
+import Spinner from "../../components/common/Spinner";
 
 const Header = ({ toggleSidebar }) => {
   const [open, setOpen] = useState(false);
-  const { user } = useUser();
+  // const { user } = useUser();
+  const { data: profile, isLoading } = useProfileQuery();
+  console.log(profile);
+  const user = profile?.data;
 
   const src = getImageUrl(user?.image);
 
@@ -27,6 +32,8 @@ const Header = ({ toggleSidebar }) => {
   };
 
   // Notification Popover Content
+
+  if (isLoading) <Spinner />;
 
   return (
     <div className="bg-[#232323] min-h-[80px] flex items-center px-6 transition-all duration-300">

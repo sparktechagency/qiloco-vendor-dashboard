@@ -13,13 +13,11 @@ const productSlice = api.injectEndpoints({
       invalidatesTags: ["Products"],
     }),
     updateProduct: builder.mutation({
-      query: ({ id, updatedData }) => {
-        return {
-          url: `/category/update-category/${id}`,
-          method: "PATCH",
-          body: updatedData,
-        };
-      },
+      query: ({ id, formData }) => ({
+        url: `/api/v1/product/${id}`,
+        method: "PUT",
+        body: formData,
+      }),
       invalidatesTags: ["Products"],
     }),
     deleteProduct: builder.mutation({

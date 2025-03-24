@@ -1,15 +1,56 @@
 import { Button, Form, Input, ConfigProvider } from "antd";
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useResetPasswordMutation } from "../../redux/apiSlices/authSlice";
 
 const ResetPassword = () => {
-  const email = new URLSearchParams(location.search).get("email");
+  const location = useLocation();
   const navigate = useNavigate();
+  const email = new URLSearchParams(location.search).get("email");
+
+  const [resetPassword, { isLoading }] = useResetPasswordMutation();
+  const [errorMessage, setErrorMessage] = useState("");
 
   const onFinish = async (values) => {
-    navigate(`/auth/login`);
-  };
+    // const forgetOtpMatchToken = localStorage.getItem("forgetOtpMatchToken");
+    const resetToken = localStorage.getItem("verifyToken"); // ✅ VerifyToken is sent as resetToken
 
+    if (!email) {
+      setErrorMessage("Email is missing. Please restart the process.");
+      return;
+    }
+    // if (!forgetOtpMatchToken) {
+    //   setErrorMessage("OTP verification token is missing. Please try again.");
+    //   return;
+    // }
+    if (!resetToken) {
+      setErrorMessage("Reset token is missing. Please try again.");
+      return;
+    }
+
+    try {
+      const response = await resetPassword(
+        {
+          email,
+          newPassword: values.newPassword,
+          confirmPassword: values.confirmPassword,
+        },
+        {
+          headers: { resetToken }, // ✅ Send resetToken in headers
+        }
+      ).unwrap();
+      if (response.success) {
+        console.log("Password Reset Success:", response);
+        localStorage.clear("verifyToken");
+        navigate(`/auth/login`);
+      }
+    } catch (err) {
+      console.error("Reset Password Failed:", err?.data?.message || err);
+      setErrorMessage(
+        err?.data?.message || "Something went wrong. Please try again."
+      );
+    }
+  };
   return (
     <div>
       <div className="text-center mb-12">
