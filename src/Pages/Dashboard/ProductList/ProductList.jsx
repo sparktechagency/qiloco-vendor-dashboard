@@ -124,8 +124,8 @@ function ProductList() {
                 colorBgBaseHover: "black",
                 activeBg: "black",
                 colorBorder: "transparent",
+                activeBorderColor: "#a11d26",
                 colorPrimaryBorder: "transparent",
-                boxShadow: "none",
               },
               Button: {
                 defaultHoverBorderColor: "#a01d25",
@@ -135,7 +135,7 @@ function ProductList() {
         >
           <Input
             placeholder="Search here..."
-            className="w-1/3 bg-black border-none outline-none text-sm text-slate-300"
+            className="w-72 bg-black border-none outline-none text-sm text-slate-300"
             prefix={<SearchOutlined className="text-[#5e5e5e] text-lg pl-4" />}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
