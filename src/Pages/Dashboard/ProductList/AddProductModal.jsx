@@ -9,6 +9,7 @@ import {
   Upload,
   Image,
   message,
+  InputNumber,
 } from "antd";
 import { RiUploadCloud2Line } from "react-icons/ri";
 import { AiOutlineDelete } from "react-icons/ai";
@@ -256,6 +257,7 @@ function ProductModal({ isModalOpen, setIsModalOpen, editProduct = null }) {
             activeBorderColor: "grey",
             hoverBorderColor: "grey",
           },
+
           Input: {
             hoverBg: "black",
             colorBgBase: "black",
@@ -265,6 +267,15 @@ function ProductModal({ isModalOpen, setIsModalOpen, editProduct = null }) {
             colorBorder: "transparent",
             colorPrimaryBorder: "transparent",
             boxShadow: "none",
+          },
+          Button: {
+            defaultHoverBg: "#a11d26",
+            defaultBorderColor: "none",
+            defaultHoverBorderColor: "none",
+            defaultHoverColor: "#ffffff",
+            defaultActiveBg: "#a11d26",
+            defaultActiveColor: "#ffffff",
+            defaultActiveBorderColor: "none",
           },
         },
       }}
@@ -297,8 +308,7 @@ function ProductModal({ isModalOpen, setIsModalOpen, editProduct = null }) {
                   placeholder="Enter your product name"
                   className="border-none h-9"
                   style={{
-                    background:
-                      focusedField === "productName" ? "#e8f0fd" : "black",
+                    background: isEditMode ? "#f0f5ff" : "black",
                   }}
                   onFocus={() => setFocusedField("productName")}
                   onBlur={() => setFocusedField(null)}
@@ -316,10 +326,7 @@ function ProductModal({ isModalOpen, setIsModalOpen, editProduct = null }) {
                   placeholder="Write product description"
                   className="border-none"
                   style={{
-                    background:
-                      focusedField === "productDescription"
-                        ? "#e8f0fd"
-                        : "black",
+                    background: isEditMode ? "#f0f5ff" : "black",
                   }}
                   onFocus={() => setFocusedField("productDescription")}
                   onBlur={() => setFocusedField(null)}
@@ -331,12 +338,12 @@ function ProductModal({ isModalOpen, setIsModalOpen, editProduct = null }) {
                 name="productPrice"
                 rules={[{ required: true, message: "Product Price required!" }]}
               >
-                <Input
+                <InputNumber
                   placeholder="Enter your product price"
-                  className="border-none h-9"
+                  controls={false}
+                  className="border-none h-9 w-full flex items-center"
                   style={{
-                    background:
-                      focusedField === "productPrice" ? "#e8f0fd" : "black",
+                    background: isEditMode ? "#f0f5ff" : "black",
                   }}
                   onFocus={() => setFocusedField("productPrice")}
                   onBlur={() => setFocusedField(null)}
@@ -378,8 +385,7 @@ function ProductModal({ isModalOpen, setIsModalOpen, editProduct = null }) {
                   placeholder="2 pc"
                   className="border-none h-9"
                   style={{
-                    background:
-                      focusedField === "productQuantity" ? "#e8f0fd" : "black",
+                    background: isEditMode ? "#f0f5ff" : "black",
                   }}
                   onFocus={() => setFocusedField("productQuantity")}
                   onBlur={() => setFocusedField(null)}
@@ -402,8 +408,7 @@ function ProductModal({ isModalOpen, setIsModalOpen, editProduct = null }) {
                   placeholder="[Tag]"
                   className="border-none"
                   style={{
-                    background:
-                      focusedField === "filterMood" ? "#e8f0fd" : "black",
+                    background: isEditMode ? "#f0f5ff" : "black",
                   }}
                   onFocus={() => setFocusedField("filterMood")}
                   onBlur={() => setFocusedField(null)}
@@ -423,8 +428,7 @@ function ProductModal({ isModalOpen, setIsModalOpen, editProduct = null }) {
                   placeholder="Enter your Product Potency"
                   className="border-none h-9"
                   style={{
-                    background:
-                      focusedField === "productPotency" ? "#e8f0fd" : "black",
+                    background: isEditMode ? "#f0f5ff" : "black",
                   }}
                   onFocus={() => setFocusedField("productPotency")}
                   onBlur={() => setFocusedField(null)}
@@ -443,8 +447,7 @@ function ProductModal({ isModalOpen, setIsModalOpen, editProduct = null }) {
                   placeholder="Enter your Product Genetics"
                   className="border-none h-9"
                   style={{
-                    background:
-                      focusedField === "productGenetics" ? "#e8f0fd" : "black",
+                    background: isEditMode ? "#f0f5ff" : "black",
                   }}
                   onFocus={() => setFocusedField("productGenetics")}
                   onBlur={() => setFocusedField(null)}
@@ -460,8 +463,7 @@ function ProductModal({ isModalOpen, setIsModalOpen, editProduct = null }) {
                   placeholder="Enter your Product Origin"
                   className="border-none h-9"
                   style={{
-                    background:
-                      focusedField === "productOrigin" ? "#e8f0fd" : "black",
+                    background: isEditMode ? "#f0f5ff" : "black",
                   }}
                   onFocus={() => setFocusedField("productOrigin")}
                   onBlur={() => setFocusedField(null)}
@@ -477,8 +479,7 @@ function ProductModal({ isModalOpen, setIsModalOpen, editProduct = null }) {
                   placeholder="Enter your Product Type"
                   className="border-none h-9"
                   style={{
-                    background:
-                      focusedField === "productType" ? "#e8f0fd" : "black",
+                    background: isEditMode ? "#f0f5ff" : "black",
                   }}
                   onFocus={() => setFocusedField("productType")}
                   onBlur={() => setFocusedField(null)}
@@ -494,8 +495,7 @@ function ProductModal({ isModalOpen, setIsModalOpen, editProduct = null }) {
                   placeholder="Enter your Product Scent"
                   className="border-none h-9"
                   style={{
-                    background:
-                      focusedField === "productScent" ? "#e8f0fd" : "black",
+                    background: isEditMode ? "#f0f5ff" : "black",
                   }}
                   onFocus={() => setFocusedField("productScent")}
                   onBlur={() => setFocusedField(null)}
@@ -566,7 +566,6 @@ function ProductModal({ isModalOpen, setIsModalOpen, editProduct = null }) {
           <div className="flex gap-4 mt-4">
             {/* Submit Button */}
             <Button
-              type="primary"
               htmlType="submit"
               loading={isCreating || isUpdating}
               className="w-full h-12 bg-quilocoD hover:bg-quilocoD/90 text-white text-[18px] font-medium rounded-lg"
