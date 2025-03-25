@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Table, Avatar, ConfigProvider, Button, Dropdown, Menu } from "antd";
+import {
+  Table,
+  Avatar,
+  ConfigProvider,
+  Button,
+  Dropdown,
+  Menu,
+  message,
+} from "antd";
 import { DownOutlined } from "@ant-design/icons";
 import {
   useGetOrderQuery,
@@ -44,30 +52,84 @@ function OrderManagement() {
     setIsModalOpen(true);
   };
 
+  // const handleStatusChange = async (key, newStatus) => {
+  //   // Find the selected order from the data
+  //   const selectedOrder = data.find((item) => item.key === key);
+
+  //   // Make sure we are updating a valid order
+  //   if (selectedOrder) {
+  //     try {
+  //       // Call the mutation to update the order status on the server
+  //       const response = await updateOrderStatus({
+  //         status: newStatus, // This will be the new status like 'delivered'
+  //         id: selectedOrder.key, // Pass the order key (ID)
+  //       }).unwrap();
+
+  //       // Check if the response has a success property
+  //       if (response.success === true) {
+  //         message.success(
+  //           response.message || "Order status updated successfully"
+  //         );
+
+  //         // After successful update, update the local state to reflect the new status
+  //         setData((prevData) =>
+  //           prevData.map((item) =>
+  //             item.key === key
+  //               ? {
+  //                   ...item,
+  //                   status:
+  //                     newStatus.charAt(0).toUpperCase() + newStatus.slice(1),
+  //                 }
+  //               : item
+  //           )
+  //         );
+  //       } else {
+  //         // If success is false, show an error message
+  //         message.error(response.message || "Failed to update order status");
+  //       }
+  //     } catch (error) {
+  //       console.error("Failed to update order status:", error);
+  //       message.error("An error occurred while updating the order status");
+  //     }
+  //   }
+  // };
+
   const handleStatusChange = async (key, newStatus) => {
-    // Find the selected order from the data
     const selectedOrder = data.find((item) => item.key === key);
 
-    // Make sure we are updating a valid order
-    if (selectedOrder) {
-      try {
-        // Call the mutation to update the order status on the server
-        const response = await updateOrderStatus({
-          status: newStatus, // This will be the new status like 'delivered'
-          id: selectedOrder.key, // Pass the order key (ID)
-        }).unwrap();
+    if (!selectedOrder) return message.error("Order not found!");
 
-        console.log(response);
+    try {
+      const response = await updateOrderStatus({
+        status: newStatus,
+        id: selectedOrder.key,
+      }).unwrap();
 
-        // After successful update, update the local state to reflect the new status
+      if (response.success) {
+        message.success(
+          response.message || "Order status updated successfully"
+        );
+
+        // Update UI
         setData((prevData) =>
           prevData.map((item) =>
-            item.key === key ? { ...item, status: newStatus } : item
+            item.key === key
+              ? {
+                  ...item,
+                  status:
+                    newStatus.charAt(0).toUpperCase() + newStatus.slice(1),
+                }
+              : item
           )
         );
-      } catch (error) {
-        console.error("Failed to update order status:", error);
+      } else {
+        message.error(response.message || "Failed to update order status");
       }
+    } catch (error) {
+      console.error("Order update failed:", error);
+      message.error(
+        error?.data?.message || "An error occurred while updating order status"
+      );
     }
   };
 
@@ -142,7 +204,7 @@ function OrderManagement() {
           <Menu onClick={({ key }) => handleStatusChange(record.key, key)}>
             <Menu.Item key="pending">Pending</Menu.Item>
             <Menu.Item key="processing">Processing</Menu.Item>
-            <Menu.Item key="canceled">Canceled</Menu.Item>
+            {/* <Menu.Item key="canceled">Canceled</Menu.Item> */}
             <Menu.Item key="delivered">Delivered</Menu.Item>
           </Menu>
         );
@@ -193,7 +255,7 @@ function OrderManagement() {
           <OrderDetailsModal
             isModalOpen={isModalOpen}
             setIsModalOpen={setIsModalOpen}
-            data={selectedOrder} // Changed from 'order' to 'data' to match the modal's prop name
+            data={selectedOrder}
           />
         )}
       </ConfigProvider>

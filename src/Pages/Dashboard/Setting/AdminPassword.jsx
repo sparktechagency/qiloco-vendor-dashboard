@@ -64,7 +64,7 @@ function AdminPassword() {
       <Card
         title="Change Password"
         bordered={false}
-        style={{ width: 850, height: 460 }}
+        style={{ width: 850, height: 450 }}
         className="w-full h-full flex flex-col text-white shadow-[0px_10px_100px_3px_rgba(0,_0,_0,_0.1)]"
       >
         <Form
