@@ -23,11 +23,12 @@ function ProductList() {
   const [productNameToDelete, setProductNameToDelete] = useState("");
   const [isEditMode, setIsEditMode] = useState(false);
   const [productToEdit, setProductToEdit] = useState(null);
+  const [page, setPage] = useState(1);
 
   const [deleteProduct] = useDeleteProductMutation();
   const [updateProduct] = useUpdateProductMutation();
 
-  const { data, isLoading, isError } = useProductQuery();
+  const { data, isLoading, isError } = useProductQuery(page);
   const productList = data?.data?.products || [];
 
   // Show Add Product Modal
@@ -177,8 +178,13 @@ function ProductList() {
               setIsDeleteModalOpen,
               setProductNameToDelete
             )}
-            pagination={true}
+            size="middle"
             loading={isLoading}
+            pagination={{
+              onChange: (page) => setPage(page),
+              pageSize: data?.data?.meta?.limit,
+              total: data?.data?.meta?.total,
+            }}
           />
         </div>
 

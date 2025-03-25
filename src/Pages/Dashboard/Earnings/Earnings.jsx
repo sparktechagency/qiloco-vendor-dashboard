@@ -7,7 +7,8 @@ import { useEarningQuery } from "../../../redux/apiSlices/earningSlice";
 import moment from "moment";
 
 function Earnings() {
-  const { data: earningData, isError, isLoading } = useEarningQuery();
+  const [page, setPage] = useState(1);
+  const { data: earningData, isError, isLoading } = useEarningQuery(page);
 
   // Calculate total earnings
   const totalEarnings =
@@ -50,10 +51,9 @@ const EarningsTable = ({ earningData, isLoading, isError }) => {
 
   const columns = [
     {
-      title: "Serial",
+      title: "Sl#",
       dataIndex: "serial",
       key: "serial",
-      render: (_, __, index) => index + 1,
     },
     {
       title: "Order ID",
@@ -132,7 +132,16 @@ const EarningsTable = ({ earningData, isLoading, isError }) => {
           }}
         >
           <div className="custom-table">
-            <Table columns={columns} dataSource={dataSource} pagination />
+            <Table
+              columns={columns}
+              dataSource={dataSource}
+              size="middle"
+              pagination={{
+                onChange: (page) => setPage(page),
+                pageSize: earningData?.data?.meta?.limit,
+                total: earningData?.data?.meta?.total,
+              }}
+            />
           </div>
         </ConfigProvider>
       )}

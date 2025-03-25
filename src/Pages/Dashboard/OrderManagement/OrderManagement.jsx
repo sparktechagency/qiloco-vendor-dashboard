@@ -22,9 +22,10 @@ function OrderManagement() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [data, setData] = useState([]);
+  const [page, setPage] = useState(1);
 
   // Fetch the orders and the mutation hook
-  const { data: orderList, isLoading } = useGetOrderQuery();
+  const { data: orderList, isLoading } = useGetOrderQuery(page);
   const [updateOrderStatus, { isLoading: isUpdating }] =
     useUpdateOrderStatusMutation();
 
@@ -245,12 +246,19 @@ function OrderManagement() {
           },
         }}
       >
-        <Table
-          dataSource={filteredData}
-          columns={columns}
-          pagination
-          loading={isLoading}
-        />
+        <div className="custom-table">
+          <Table
+            dataSource={filteredData}
+            columns={columns}
+            loading={isLoading}
+            size="middle"
+            pagination={{
+              onChange: (page) => setPage(page),
+              pageSize: orderList?.data?.meta?.limit,
+              total: orderList?.data?.meta?.total,
+            }}
+          />
+        </div>
         {selectedOrder && (
           <OrderDetailsModal
             isModalOpen={isModalOpen}
