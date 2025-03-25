@@ -434,7 +434,7 @@ textarea::placeholder {
 }
 
 /* popover */
-:where(.css-dev-only-do-not-override-11lehqq).ant-popover .ant-popover-inner {
+.ant-popover .ant-popover-inner {
   background-color: #000000;
   background-clip: padding-box;
   border-radius: 8px;
