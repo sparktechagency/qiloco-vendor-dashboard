@@ -424,13 +424,11 @@ function ProductModal({ isModalOpen, setIsModalOpen, editProduct = null }) {
                 rules={[
                   {
                     required: true,
-                    message: "Please select Tags",
-                    type: "array",
+                    message: "Please select a Tag",
                   },
                 ]}
               >
                 <Select
-                  mode="multiple"
                   placeholder="[Tag]"
                   className={`border-none h-10 ${
                     isEditMode ? "text-black" : "text-white"
@@ -575,6 +573,7 @@ function ProductModal({ isModalOpen, setIsModalOpen, editProduct = null }) {
                       }}
                       className="w-full flex justify-between border rounded-md p-1.5"
                     >
+                      {console.log(file)}
                       <Image
                         src={
                           file.isExisting
