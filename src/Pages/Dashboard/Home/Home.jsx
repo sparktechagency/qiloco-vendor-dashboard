@@ -5,6 +5,7 @@ import { PiCurrencyCircleDollarBold } from "react-icons/pi";
 import { FaBoxOpen, FaCannabis } from "react-icons/fa6";
 import TotalOrderList from "./TotalOrderList";
 import { useGetTotalQuery } from "../../../redux/apiSlices/overViewSlice";
+import { Link } from "react-router-dom";
 
 const Home = () => {
   const { data: analysis, isLoading, isError } = useGetTotalQuery();
@@ -35,7 +36,7 @@ const Home = () => {
       value: isLoading ? (
         <p className="text-[12px] text-white">loading...</p>
       ) : (
-        `$${analysis?.data?.totalEarning}`
+        `$${parseFloat(analysis?.data?.totalEarning).toFixed(2)}`
       ),
       icon: <PiCurrencyCircleDollarBold size={60} className="text-white" />,
       bg: "bg-quilocoS",
@@ -61,7 +62,9 @@ const Home = () => {
         <div className="w-full ">
           <div className="w-full flex items-center justify-between mb-2 text-white">
             <h3 className=" text-[24px] font-bold">Total Order List</h3>
-            <a className="underline cursor-pointer">See all</a>
+            <Link to="/total-order-list" className="underline cursor-pointer">
+              See all
+            </Link>
           </div>
 
           <div

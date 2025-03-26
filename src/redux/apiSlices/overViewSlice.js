@@ -1,6 +1,6 @@
 import { api } from "../api/baseApi";
 
-const authSlice = api.injectEndpoints({
+const overViewSlice = api.injectEndpoints({
   endpoints: (builder) => ({
     getRecentProduct: builder.query({
       query: () => {
@@ -26,7 +26,14 @@ const authSlice = api.injectEndpoints({
         };
       },
     }),
-
+    getTotalOrderList: builder.query({
+      query: () => {
+        return {
+          method: "GET",
+          url: "/api/v1/vendor/dashboard/products",
+        };
+      },
+    }),
     getTotal: builder.query({
       query: () => {
         return {
@@ -43,4 +50,5 @@ export const {
   useGetPrdouctSalingDataQuery,
   useGetEarningDataQuery,
   useGetRecentProductQuery,
-} = authSlice;
+  useGetTotalOrderListQuery,
+} = overViewSlice;

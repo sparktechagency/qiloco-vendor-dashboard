@@ -19,6 +19,7 @@ import PrivacyPolicy from "../Pages/Dashboard/Policy/PrivacyPolicy.jsx";
 import ProductList from "../Pages/Dashboard/ProductList/ProductList.jsx";
 import OrderManagement from "../Pages/Dashboard/OrderManagement/OrderManagement.jsx";
 import Notifications from "../Pages/Dashboard/Notification/Notifications.jsx";
+import TotalOrderLists from "../Pages/Dashboard/TotalOrderList/TotalOrserLists.jsx";
 
 const router = createBrowserRouter([
   {
@@ -37,6 +38,10 @@ const router = createBrowserRouter([
       {
         path: "/order-management",
         element: <OrderManagement />,
+      },
+      {
+        path: "/total-order-list",
+        element: <TotalOrderLists />,
       },
       {
         path: "/earnings",

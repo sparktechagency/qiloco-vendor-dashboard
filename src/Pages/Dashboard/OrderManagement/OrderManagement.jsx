@@ -53,48 +53,6 @@ function OrderManagement() {
     setIsModalOpen(true);
   };
 
-  // const handleStatusChange = async (key, newStatus) => {
-  //   // Find the selected order from the data
-  //   const selectedOrder = data.find((item) => item.key === key);
-
-  //   // Make sure we are updating a valid order
-  //   if (selectedOrder) {
-  //     try {
-  //       // Call the mutation to update the order status on the server
-  //       const response = await updateOrderStatus({
-  //         status: newStatus, // This will be the new status like 'delivered'
-  //         id: selectedOrder.key, // Pass the order key (ID)
-  //       }).unwrap();
-
-  //       // Check if the response has a success property
-  //       if (response.success === true) {
-  //         message.success(
-  //           response.message || "Order status updated successfully"
-  //         );
-
-  //         // After successful update, update the local state to reflect the new status
-  //         setData((prevData) =>
-  //           prevData.map((item) =>
-  //             item.key === key
-  //               ? {
-  //                   ...item,
-  //                   status:
-  //                     newStatus.charAt(0).toUpperCase() + newStatus.slice(1),
-  //                 }
-  //               : item
-  //           )
-  //         );
-  //       } else {
-  //         // If success is false, show an error message
-  //         message.error(response.message || "Failed to update order status");
-  //       }
-  //     } catch (error) {
-  //       console.error("Failed to update order status:", error);
-  //       message.error("An error occurred while updating the order status");
-  //     }
-  //   }
-  // };
-
   const handleStatusChange = async (key, newStatus) => {
     const selectedOrder = data.find((item) => item.key === key);
 
@@ -150,11 +108,11 @@ function OrderManagement() {
       key: "productname",
       render: (_, record) => (
         <div className="flex items-center gap-2">
-          <Avatar
+          {/* <Avatar
             shape="square"
             size="default"
             src="https://via.placeholder.com/50"
-          />
+          /> */}
           <span>{record.productname}</span>
         </div>
       ),
@@ -173,6 +131,11 @@ function OrderManagement() {
       title: "Amount",
       dataIndex: "amount",
       key: "amount",
+      render: (amount) => {
+        // Convert to number and ensure 2 decimal places
+        const numericAmount = parseFloat(amount.replace("$", "")); // Remove $ if present
+        return <p>{isNaN(numericAmount) ? "N/A" : numericAmount.toFixed(2)}</p>;
+      },
     },
     {
       title: "Status",

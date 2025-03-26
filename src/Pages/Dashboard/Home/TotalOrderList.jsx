@@ -36,9 +36,10 @@ function TotalOrderList() {
   // Define table columns
   const columns = [
     {
-      title: "Order #",
+      title: "Order#",
       dataIndex: "serial",
       key: "serial",
+      render: (_, __, index) => <>#{index + 1}</>,
     },
     {
       title: "Products",
@@ -59,6 +60,11 @@ function TotalOrderList() {
       title: "Amount",
       dataIndex: "amount",
       key: "amount",
+      render: (amount) => {
+        // Convert to number and ensure 2 decimal places
+        const numericAmount = parseFloat(amount.replace("$", "")); // Remove $ if present
+        return <p>{isNaN(numericAmount) ? "N/A" : numericAmount.toFixed(2)}</p>;
+      },
     },
     {
       title: "Payment",
@@ -71,15 +77,15 @@ function TotalOrderList() {
           <span className="text-yellow-500">Pending</span>
         ),
     },
-    {
-      title: "Action",
-      key: "action",
-      render: (_, record) => (
-        <a href="#" className="hover:text-[#a11d26]">
-          <IoEye size={24} />
-        </a>
-      ),
-    },
+    // {
+    //   title: "Action",
+    //   key: "action",
+    //   render: (_, record) => (
+    //     <a href="#" className="hover:text-[#a11d26]">
+    //       <IoEye size={24} />
+    //     </a>
+    //   ),
+    // },
   ];
 
   // Show loading state

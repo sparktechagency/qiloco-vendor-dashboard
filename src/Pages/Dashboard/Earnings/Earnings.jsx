@@ -21,12 +21,12 @@ function Earnings() {
         <div className="bg-[#121314] text-white flex items-center justify-evenly w-[30%] h-full rounded-lg">
           <LuArrowLeftRight size={25} />
           Today's Earning
-          <span>${totalEarnings.toLocaleString()}</span>
+          <span>${parseFloat(totalEarnings).toFixed(2).toLocaleString()}</span>
         </div>
         <div className="bg-[#121314] text-white flex items-center justify-evenly w-[30%] h-full rounded-lg">
           <LuArrowLeftRight size={25} />
           Total Earnings
-          <span>${totalEarnings.toLocaleString()}</span>
+          <span>${parseFloat(totalEarnings).toFixed(2).toLocaleString()}</span>
         </div>
       </div>
       <EarningsTable
@@ -81,7 +81,7 @@ const EarningsTable = ({ earningData, isLoading, isError }) => {
       title: "Amount",
       dataIndex: "earning",
       key: "earning",
-      render: (text) => `$${text.toLocaleString()}`,
+      render: (text) => `$${parseFloat(text).toFixed(2)}`,
     },
     {
       title: "Action",
