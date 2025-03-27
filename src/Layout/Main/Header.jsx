@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { FaRegBell } from "react-icons/fa6";
 import { Badge, Avatar, Popover } from "antd";
@@ -8,15 +8,26 @@ import NotificationPopover from "../../Pages/Dashboard/Notification/Notification
 import { getImageUrl } from "../../components/common/ImageUrl";
 import { useProfileQuery } from "../../redux/apiSlices/pofileSlice";
 import Spinner from "../../components/common/Spinner";
+import { useNotificationQuery } from "../../redux/apiSlices/notificationSlice";
+import io from "socket.io-client"; // Import socket.io-client
 
 const Header = ({ toggleSidebar }) => {
   const [open, setOpen] = useState(false);
-  // const { user } = useUser();
-  const { data: profile, isLoading } = useProfileQuery();
-  console.log(profile);
-  const user = profile?.data;
+  const socketRef = useRef(null);
 
+  const { data: profile, isLoading } = useProfileQuery();
+  const user = profile?.data;
   const src = getImageUrl(user?.image);
+
+  const {
+    data: notifications,
+    refetch,
+    isLoading: notificationLoading,
+  } = useNotificationQuery();
+
+  const unreadNotification = notifications?.data?.result?.filter(
+    (notification) => !notification.read
+  ).length;
 
   const location = useLocation();
   const getPageName = () => {
@@ -30,9 +41,24 @@ const Header = ({ toggleSidebar }) => {
       .replace(/\b\w/g, (char) => char.toUpperCase()); // Capitalize first letter of each word
   };
 
-  // Notification Popover Content
+  useEffect(() => {
+    // Connect to WebSocket Server
+    socketRef.current = io("YOUR_BACKEND_SOCKET_URL", {
+      transports: ["websocket"],
+    });
 
-  if (isLoading) <Spinner />;
+    // Listen for new notification event
+    socketRef.current.on("newNotification", () => {
+      refetch(); // Fetch updated notifications when a new one arrives
+    });
+
+    // Cleanup WebSocket connection when component unmounts
+    return () => {
+      socketRef.current.disconnect();
+    };
+  }, [refetch]);
+
+  if (isLoading) return <Spinner />;
 
   return (
     <div className="bg-[#232323] min-h-[80px] flex items-center px-6 transition-all duration-300">
@@ -55,12 +81,11 @@ const Header = ({ toggleSidebar }) => {
           open={open}
           onOpenChange={setOpen}
           placement="bottom"
-          // overlayClassName="bg-gray-800 p-3 rounded-lg"
         >
           <div className="relative border rounded-full p-2 cursor-pointer">
             <FaRegBell size={24} color="white" />
             <Badge
-              count={10}
+              count={unreadNotification}
               overflowCount={5}
               size="small"
               className="absolute top-1 -right-0"
