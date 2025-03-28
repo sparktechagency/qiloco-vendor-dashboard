@@ -4,7 +4,7 @@ import { IoEye } from "react-icons/io5";
 
 import { useGetOrderQuery } from "../../../redux/apiSlices/orderSlice";
 
-function TotalOrderList() {
+function SellingOvervierw() {
   const { data: orderList, isLoading, error } = useGetOrderQuery();
 
   useEffect(() => {
@@ -118,4 +118,4 @@ function TotalOrderList() {
   );
 }
 
-export default TotalOrderList;
+export default SellingOvervierw;

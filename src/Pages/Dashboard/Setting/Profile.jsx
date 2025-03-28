@@ -3,22 +3,18 @@ import man from "../../../assets/quiloco/man.png";
 import { FaFeather } from "react-icons/fa6";
 import { Button, ConfigProvider, Form, Input, Upload, message } from "antd";
 import { HiMiniPencil } from "react-icons/hi2";
-
 import { imageUrl } from "../../../redux/api/baseApi";
-
 import { useUser } from "../../../provider/User";
 import {
   useProfileQuery,
   useUpdateProfileMutation,
 } from "../../../redux/apiSlices/pofileSlice";
-
+import Loading from "../../../components/common/Loading";
 function Profile() {
   const { data: profile, isLoading } = useProfileQuery();
   const [showButton, setShowButton] = useState(false);
   const [uploadedImage, setUploadedImage] = useState(null);
   const user = profile?.data;
-
-  if (isLoading) <Spinner />;
 
   return (
     <ConfigProvider
@@ -36,41 +32,38 @@ function Profile() {
     >
       <div className="bg-quilocoP w-[50%] min-h-72 flex flex-col justify-start items-center px-4 rounded-lg">
         <div className="relative mt-6 flex flex-col items-center justify-center">
-          <img
-            src={
-              uploadedImage
-                ? URL.createObjectURL(uploadedImage)
-                : user?.image
-                ? `${imageUrl}${user.image}`
-                : man
-            }
-            width={120}
-            height={120}
-            className="border border-slate-500 rounded-full object-cover"
-          />
-          {showButton && (
-            <Upload
-              showUploadList={false}
-              beforeUpload={(file) => {
-                const isImage = file.type.startsWith("image/");
-                if (!isImage) {
-                  message.error("You can only upload image files!");
-                  return Upload.LIST_IGNORE;
-                }
-                setUploadedImage(file);
-                return false; // Prevent auto upload
-              }}
-            >
-              <button>
-                <FaFeather
-                  size={30}
-                  className="text-quilocoD absolute top-16 left-20 rounded-full bg-black p-1"
-                />
-              </button>
-            </Upload>
-          )}
+          {/* Image Wrapper */}
+          <div className=" w-[120px]  h-[120px] overflow-hidden  rounded-full border border-slate-500">
+            <img
+              src={
+                uploadedImage
+                  ? URL.createObjectURL(uploadedImage)
+                  : user?.image
+                  ? `${imageUrl}${user.image}`
+                  : man
+              }
+              className="w-full h-full object-cover"
+            />
+            {showButton && (
+              <Upload
+                showUploadList={false}
+                beforeUpload={(file) => {
+                  if (!file.type.startsWith("image/")) {
+                    message.error("You can only upload image files!");
+                    return Upload.LIST_IGNORE;
+                  }
+                  setUploadedImage(file);
+                  return false;
+                }}
+              >
+                <button className="absolute top-16 right-4 bg-black p-1 z-50 rounded-full">
+                  <FaFeather size={24} className="text-quilocoD" />
+                </button>
+              </Upload>
+            )}
+          </div>
           <h3 className="text-slate-50 text-xl mt-3">
-            {user?.name || "Unknown User"}
+            {user?.name || "Vendor"}
           </h3>
         </div>
         <div className="w-full flex justify-end">
@@ -89,12 +82,17 @@ function Profile() {
             {showButton ? "Cancel" : "Edit Profile"}
           </Button>
         </div>
-        <ProfileDetails
-          showButton={showButton}
-          setShowButton={setShowButton}
-          user={user}
-          uploadedImage={uploadedImage}
-        />
+
+        {!isLoading && user ? (
+          <ProfileDetails
+            showButton={showButton}
+            setShowButton={setShowButton}
+            user={user}
+            uploadedImage={uploadedImage}
+          />
+        ) : (
+          <p className="text-white">Loading profile...</p>
+        )}
       </div>
     </ConfigProvider>
   );
@@ -106,6 +104,7 @@ const ProfileDetails = ({ showButton, setShowButton, user, uploadedImage }) => {
   const [form] = Form.useForm();
   const { updateUser } = useUser(); // Assuming there's an updateUser function
   const [updateProfile, { isLoading }] = useUpdateProfileMutation();
+
   // Reset form when user data changes or editing mode changes
   React.useEffect(() => {
     if (user) {
@@ -113,12 +112,10 @@ const ProfileDetails = ({ showButton, setShowButton, user, uploadedImage }) => {
         name: user.name,
         email: user.email,
         phone: user.phoneNumber,
-        role: user.role,
+        role: user?.role || "", // Ensure role is safely accessed
       });
     }
   }, [user, form]);
-
-  console.log("userss", user);
 
   const handleFinish = async (values) => {
     try {
@@ -135,7 +132,6 @@ const ProfileDetails = ({ showButton, setShowButton, user, uploadedImage }) => {
       };
 
       // Append data as separate fields inside the "data" object
-      // formData.append("data[name]", values.name); // data[name]
       formData.append("data", JSON.stringify(data)); // data[phoneNumber]
 
       // Log FormData content to check if it's correct
@@ -145,7 +141,6 @@ const ProfileDetails = ({ showButton, setShowButton, user, uploadedImage }) => {
 
       // Sending FormData with the mutation
       const response = await updateProfile(formData).unwrap();
-      console.log(response);
       if (response.success) {
         message.success("Profile updated successfully!");
         setShowButton(false);
@@ -229,7 +224,7 @@ const ProfileDetails = ({ showButton, setShowButton, user, uploadedImage }) => {
           >
             <Input
               readOnly
-              value={user.role}
+              value={user?.role || ""} // Safely access user.role
               className="bg-black border-none h-12 text-slate-300"
             />
           </Form.Item>

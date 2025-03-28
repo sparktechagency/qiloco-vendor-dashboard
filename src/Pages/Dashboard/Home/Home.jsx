@@ -3,9 +3,10 @@ import EarningOverview from "./EarningOverview";
 import MonthlySale from "./MonthlySale";
 import { PiCurrencyCircleDollarBold } from "react-icons/pi";
 import { FaBoxOpen, FaCannabis } from "react-icons/fa6";
-import TotalOrderList from "./TotalOrderList";
 import { useGetTotalQuery } from "../../../redux/apiSlices/overViewSlice";
 import { Link } from "react-router-dom";
+import Loading from "../../../components/common/Loading";
+import SellingOvervierw from "./SellingOvervierw";
 
 const Home = () => {
   const { data: analysis, isLoading, isError } = useGetTotalQuery();
@@ -43,6 +44,8 @@ const Home = () => {
     },
   ];
 
+  if (isLoading) return <Loading />; // Fixed missing return
+
   return (
     <div className="px-3">
       <div className="flex flex-col flex-wrap items-end gap-5 justify-between w-full bg-transparent rounded-md">
@@ -76,7 +79,7 @@ const Home = () => {
                     dark:[&::-webkit-scrollbar-track]:bg-neutral-700
                     dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500"
           >
-            <TotalOrderList />
+            <SellingOvervierw />
           </div>
         </div>
       </div>

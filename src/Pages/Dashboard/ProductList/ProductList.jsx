@@ -13,6 +13,7 @@ import {
 } from "../../../redux/apiSlices/productSlice";
 import { getImageUrl } from "../../../components/common/ImageUrl";
 import ProductModal from "./AddProductModal";
+import Loading from "../../../components/common/Loading";
 
 function ProductList() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -112,6 +113,8 @@ function ProductList() {
     setIsDeleteModalOpen(false);
     setProductNameToDelete("");
   };
+
+  if (isLoading) return <Loading />; // Fixed missing return
 
   return (
     <div className="px-3 py-4">

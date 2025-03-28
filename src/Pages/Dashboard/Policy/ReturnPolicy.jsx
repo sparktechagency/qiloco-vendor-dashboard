@@ -95,12 +95,13 @@
 
 import React, { useEffect, useState } from "react";
 import { usePolicyQuery } from "../../../redux/apiSlices/policySlice";
+import Loading from "../../../components/common/Loading";
 
 function ReturnPolicy() {
   const [content, setContent] = useState("Return Policy");
 
   // Fetch return policy data
-  const { data: policyData } = usePolicyQuery();
+  const { data: policyData, isLoading } = usePolicyQuery();
 
   // Set initial content when policy data loads
   useEffect(() => {
@@ -108,7 +109,7 @@ function ReturnPolicy() {
       setContent(policyData.data.termsOfService);
     }
   }, [policyData]);
-
+  if (isLoading) return <Loading />; // Fixed missing return
   return (
     <div className="px-3 py-4">
       <div

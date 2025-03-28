@@ -8,6 +8,7 @@ import {
   useReadAllMutation,
   useReadMutation,
 } from "../../../redux/apiSlices/notificationSlice";
+import Loading from "../../../components/common/Loading";
 
 const Notifications = ({ profile }) => {
   const [page, setPage] = useState(1);
@@ -74,6 +75,7 @@ const Notifications = ({ profile }) => {
   const displayedNotifications =
     notifications?.data?.result?.slice((page - 1) * 5, page * 5) || [];
 
+  if (notificationLoading) return <Loading />; // Fixed missing return
   return (
     <div className="px-4">
       <div className="flex items-center justify-between mb-3 text-white">

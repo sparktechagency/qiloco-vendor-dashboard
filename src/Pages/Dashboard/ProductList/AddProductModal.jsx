@@ -574,7 +574,26 @@ function ProductModal({ isModalOpen, setIsModalOpen, editProduct = null }) {
                       className="w-full flex justify-between border rounded-md p-1.5"
                     >
                       {console.log(file)}
-                      <Image
+                      {isCreating ? (
+                        <Image
+                          src={URL.createObjectURL(file.originFileObj)}
+                          width={60}
+                          height={60}
+                          style={{ borderRadius: "5px", objectFit: "cover" }}
+                        />
+                      ) : (
+                        <Image
+                          src={
+                            file.isExisting
+                              ? getImageUrl(file.url)
+                              : URL.createObjectURL(file.originFileObj)
+                          }
+                          width={60}
+                          height={60}
+                          style={{ borderRadius: "5px", objectFit: "cover" }}
+                        />
+                      )}
+                      {/* <Image
                         src={
                           file.isExisting
                             ? getImageUrl(file.url)
@@ -585,7 +604,7 @@ function ProductModal({ isModalOpen, setIsModalOpen, editProduct = null }) {
                         width={60}
                         height={60}
                         style={{ borderRadius: "5px", objectFit: "cover" }}
-                      />
+                      /> */}
                       <p>{file.name}</p>
                       <Button
                         onClick={() => handleDelete(file)}

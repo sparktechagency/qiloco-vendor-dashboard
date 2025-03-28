@@ -4,13 +4,14 @@ import {
   usePolicyQuery,
   useUpdatePolicyMutation,
 } from "../../../redux/apiSlices/policySlice";
+import Loading from "../../../components/common/Loading";
 
 function PrivacyPolicy() {
   const editor = useRef(null);
   const [content, setContent] = useState("Privacy Policy");
 
   // Fetch policy data
-  const { data: policyData } = usePolicyQuery();
+  const { data: policyData, isLoading } = usePolicyQuery();
 
   // Set initial content when policy data loads
   useEffect(() => {
@@ -19,6 +20,7 @@ function PrivacyPolicy() {
     }
   }, [policyData]);
 
+  if (isLoading) return <Loading />; // Fixed missing return
   return (
     <div className="px-3 py-4">
       {/* <JoditEditor

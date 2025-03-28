@@ -5,6 +5,7 @@ import { IoEye } from "react-icons/io5";
 import TransactionDetailsModal from "./TransactionDetailsModal";
 import { useEarningQuery } from "../../../redux/apiSlices/earningSlice";
 import moment from "moment";
+import Loading from "../../../components/common/Loading";
 
 function Earnings() {
   const [page, setPage] = useState(1);
@@ -14,6 +15,8 @@ function Earnings() {
   const totalEarnings =
     earningData?.data?.earnings?.reduce((acc, item) => acc + item.earning, 0) ||
     0;
+
+  if (isLoading) return <Loading />; // Fixed missing return
 
   return (
     <div className="px-3">

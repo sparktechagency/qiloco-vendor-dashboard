@@ -9,14 +9,14 @@ const onChange = (key) => {
 };
 const items = [
   {
-    key: "password",
-    label: "Password",
-    children: <AdminPassword />,
-  },
-  {
     key: "profile",
     label: "Profile",
     children: <Profile />,
+  },
+  {
+    key: "password",
+    label: "Password",
+    children: <AdminPassword />,
   },
 ];
 function Setting() {

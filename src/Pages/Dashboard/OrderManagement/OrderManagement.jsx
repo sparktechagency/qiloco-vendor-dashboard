@@ -16,6 +16,7 @@ import {
 
 import OrderDetailsModal from "./OrderDetailsModal";
 import Spinner from "../../../components/common/Spinner";
+import Loading from "../../../components/common/Loading";
 
 function OrderManagement() {
   const [selected, setSelected] = useState("All");
@@ -191,6 +192,8 @@ function OrderManagement() {
       },
     },
   ];
+
+  if (isLoading) return <Loading />; // Fixed missing return
 
   return (
     <div className="px-3 py-4">
