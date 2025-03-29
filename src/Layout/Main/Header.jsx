@@ -7,13 +7,13 @@ import { useLocation } from "react-router-dom";
 import NotificationPopover from "../../Pages/Dashboard/Notification/NotificationPopover";
 import { getImageUrl } from "../../components/common/ImageUrl";
 import { useProfileQuery } from "../../redux/apiSlices/pofileSlice";
-import Spinner from "../../components/common/Spinner";
 import { useNotificationQuery } from "../../redux/apiSlices/notificationSlice";
-import io from "socket.io-client"; // Import socket.io-client
+import io from "socket.io-client";
 
 const Header = ({ toggleSidebar }) => {
   const [open, setOpen] = useState(false);
   const socketRef = useRef(null);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   const { data: profile, isLoading } = useProfileQuery();
   const user = profile?.data;
@@ -25,9 +25,15 @@ const Header = ({ toggleSidebar }) => {
     isLoading: notificationLoading,
   } = useNotificationQuery();
 
-  const unreadNotification = notifications?.data?.result?.filter(
-    (notification) => !notification.read
-  ).length;
+  // Initialize unread count from API data
+  useEffect(() => {
+    if (notifications?.data?.result) {
+      const count = notifications.data.result.filter(
+        (notification) => !notification.read
+      ).length;
+      setUnreadCount(count);
+    }
+  }, [notifications]);
 
   const location = useLocation();
   const getPageName = () => {
@@ -36,29 +42,71 @@ const Header = ({ toggleSidebar }) => {
 
     const pageName = path.substring(1).split("/").pop();
     return pageName
-      .replace(/([a-z])([A-Z])/g, "$1 $2") // Add space before uppercase letters
-      .replace(/-/g, " ") // Replace hyphens with spaces
-      .replace(/\b\w/g, (char) => char.toUpperCase()); // Capitalize first letter of each word
+      .replace(/([a-z])([A-Z])/g, "$1 $2")
+      .replace(/-/g, " ")
+      .replace(/\b\w/g, (char) => char.toUpperCase());
   };
 
+  // Socket connection for real-time notifications
   useEffect(() => {
-    // Connect to WebSocket Server
-    socketRef.current = io("YOUR_BACKEND_SOCKET_URL", {
-      transports: ["websocket"],
+    if (!user?._id) return;
+
+    // Connect to Socket.IO server
+    socketRef.current = io("http://10.0.60.126:6007", {
+      transports: ["websocket", "polling"],
+      reconnection: true,
     });
 
-    // Listen for new notification event
-    socketRef.current.on("newNotification", () => {
-      refetch(); // Fetch updated notifications when a new one arrives
+    // Log connection status
+    socketRef.current.on("connect", () => {
+      console.log(
+        "Socket connected in header component:",
+        socketRef.current.id
+      );
     });
 
-    // Cleanup WebSocket connection when component unmounts
-    return () => {
-      socketRef.current.disconnect();
+    socketRef.current.on("connect_error", (error) => {
+      console.error("Socket connection error in header:", error);
+    });
+
+    // Listen for notifications on the user-specific channel
+    const notificationChannel = `notification::${user._id}`;
+
+    // Handle new notification
+    const handleNewNotification = (notification) => {
+      console.log("New notification received in header:", notification);
+
+      // Increment unread count immediately
+      setUnreadCount((prev) => prev + 1);
+
+      // Also refetch to ensure server state is synced
+      refetch();
     };
-  }, [refetch]);
 
-  // if (isLoading) return <Spinner />;
+    // Register event listener
+    socketRef.current.on(notificationChannel, handleNewNotification);
+    console.log(
+      `Header listening for notifications on: ${notificationChannel}`
+    );
+
+    // Cleanup on unmount
+    return () => {
+      if (socketRef.current) {
+        socketRef.current.off(notificationChannel, handleNewNotification);
+        socketRef.current.disconnect();
+      }
+    };
+  }, [user?._id, refetch]);
+
+  // Handler for when notification is read in the popover
+  const handleNotificationRead = () => {
+    // Update the unread count when notifications are read
+    const updatedCount =
+      notifications?.data?.result?.filter((notification) => !notification.read)
+        .length || 0;
+
+    setUnreadCount(updatedCount);
+  };
 
   return (
     <div className="bg-[#232323] min-h-[80px] flex items-center px-6 transition-all duration-300">
@@ -74,18 +122,26 @@ const Header = ({ toggleSidebar }) => {
       <div className="flex items-center gap-6 ml-auto">
         {/* Notifications */}
         <Popover
-          content={<NotificationPopover />}
+          content={
+            <NotificationPopover onNotificationRead={handleNotificationRead} />
+          }
           title={null}
           trigger="click"
           arrow={false}
           open={open}
-          onOpenChange={setOpen}
+          onOpenChange={(visible) => {
+            setOpen(visible);
+            if (visible) {
+              // Refetch notifications when popover opens
+              refetch();
+            }
+          }}
           placement="bottom"
         >
           <div className="relative border rounded-full p-2 cursor-pointer">
             <FaRegBell size={24} color="white" />
             <Badge
-              count={unreadNotification}
+              count={unreadCount}
               overflowCount={5}
               size="small"
               className="absolute top-1 -right-0"

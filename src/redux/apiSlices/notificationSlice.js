@@ -9,7 +9,7 @@ const notificationSlice = api.injectEndpoints({
           method: "GET",
         };
       },
-      invalidatesTags: ["Notification"],
+      providesTags: ["Notification"],
     }),
     read: builder.mutation({
       query: (id) => {
@@ -21,13 +21,13 @@ const notificationSlice = api.injectEndpoints({
       invalidatesTags: ["Notification"],
     }),
     readAll: builder.mutation({
-      query: (id) => {
+      query: () => {
         return {
           url: `/api/v1/notification/read/all`,
           method: "PATCH",
         };
       },
-      providesTags: ["Notification"],
+      invalidatesTags: ["Notification"],
     }),
   }),
 });

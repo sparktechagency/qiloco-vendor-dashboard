@@ -10,6 +10,7 @@ import {
   useUpdateProfileMutation,
 } from "../../../redux/apiSlices/pofileSlice";
 import Loading from "../../../components/common/Loading";
+import { MdCameraEnhance } from "react-icons/md";
 function Profile() {
   const { data: profile, isLoading } = useProfileQuery();
   const [showButton, setShowButton] = useState(false);
@@ -57,7 +58,7 @@ function Profile() {
                 }}
               >
                 <button className="absolute top-16 right-4 bg-black p-1 z-50 rounded-full">
-                  <FaFeather size={24} className="text-quilocoD" />
+                  <MdCameraEnhance size={24} className="text-quilocoD" />
                 </button>
               </Upload>
             )}

@@ -123,7 +123,7 @@ const CustomTooltip = ({ active, payload }) => {
         {/* Tooltip Content */}
         <div className="bg-white p-2 text-black rounded shadow-md">
           {payload.map((pld, index) => (
-            <div key={index}>${pld.value}K</div>
+            <div key={index}>${pld.value}</div>
           ))}
         </div>
       </div>

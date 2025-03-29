@@ -1,121 +1,78 @@
-import { Button, ConfigProvider, Badge, Spin, Tag } from "antd";
-import React, { useEffect, useRef, useState } from "react";
-import { MdCancel, MdOutlineMarkEmailRead } from "react-icons/md";
-import { Link, useNavigate } from "react-router-dom";
-import io from "socket.io-client";
-
-import EmptyNotification from "../../../assets/quiloco/EmptyNotification.png";
-import moment from "moment";
+import React from "react";
+import { Link } from "react-router-dom";
+import { Spin, Tag, Button, ConfigProvider } from "antd";
 import { CheckCircleOutlined } from "@ant-design/icons";
-import { useProfileQuery } from "../../../redux/apiSlices/pofileSlice";
+import { MdOutlineMarkEmailRead, MdCancel } from "react-icons/md";
+import moment from "moment";
 import {
   useNotificationQuery,
+  useReadAllMutation,
   useReadMutation,
 } from "../../../redux/apiSlices/notificationSlice";
+import EmptyNotification from "../../../assets/quiloco/EmptyNotification.png";
 
-function NotificationPopover() {
-  const socketRef = useRef(null);
-  const [showAll, setShowAll] = useState(false);
-  const navigate = useNavigate();
-
-  const { data: profile } = useProfileQuery();
+const NotificationPopover = ({ onNotificationRead }) => {
   const {
     data: notifications,
     refetch,
     isLoading: notificationLoading,
   } = useNotificationQuery();
 
-  console.log("notification", notifications);
-
   const [readNotification, { isLoading: updateLoading }] = useReadMutation();
-  const [readAllNotifications] = useReadMutation();
+  const [readAllNotifications, { isLoading: readAllLoading }] =
+    useReadAllMutation();
 
-  useEffect(() => {
-    socketRef.current = io("http://10.0.60.126:6007");
+  const displayedNotifications = notifications?.data?.result || [];
 
-    const handleNewNotification = (notification) => {
-      refetch();
-    };
+  const formatTime = (timestamp) =>
+    timestamp ? moment(timestamp).fromNow() : "Just now";
 
-    if (profile?.data?._id) {
-      socketRef.current.on(
-        `notification::${profile.data._id}`,
-        handleNewNotification
-      );
+  const getTypeColor = (type) => {
+    switch (type) {
+      case "ORDER":
+        return "blue";
+      default:
+        return "green";
     }
+  };
 
-    return () => {
-      if (socketRef.current) {
-        socketRef.current.off(
-          `notification::${profile?.data?._id}`,
-          handleNewNotification
-        );
-        socketRef.current.disconnect();
-      }
-    };
-  }, [refetch, profile?.data?._id]);
-
-  const removeMessage = async (id) => {
-    // Implement your API call to delete/archive the notification
-    // After successful deletion:
-    refetch();
+  const handleNotificationClick = (notification) => {
+    if (!notification.read) {
+      markAsRead(notification._id);
+    }
+    // Add navigation or other actions here if needed
   };
 
   const markAsRead = async (id) => {
     try {
       await readNotification(id);
-      refetch();
+      // Refresh the notifications list to show updated UI
+      await refetch();
+      if (onNotificationRead) {
+        onNotificationRead();
+      }
     } catch (error) {
       console.error("Error marking notification as read:", error);
     }
   };
 
-  const markAllAsRead = async () => {
+  const removeMessage = (id) => {
+    // Implement delete functionality if needed
+    console.log("Delete notification:", id);
+  };
+
+  const handleReadAll = async () => {
     try {
       await readAllNotifications();
-      refetch();
+      await refetch();
+      if (onNotificationRead) {
+        onNotificationRead();
+      }
     } catch (error) {
       console.error("Error marking all notifications as read:", error);
     }
   };
 
-  const handleNotificationClick = async (notification) => {
-    try {
-      if (!notification.read) {
-        await readNotification(notification._id);
-      }
-      refetch();
-      // Add navigation logic if needed
-    } catch (error) {
-      console.error("Error updating notification:", error);
-    }
-  };
-
-  const formatTime = (timestamp) => {
-    if (!timestamp) return "Just now";
-    return moment(timestamp).fromNow();
-  };
-
-  const getTypeColor = (type) => {
-    switch (type) {
-      case "ALERT":
-        return "red";
-      case "INFO":
-        return "blue";
-      case "SUCCESS":
-        return "green";
-      default:
-        return "gray";
-    }
-  };
-
-  const unreadCount =
-    notifications?.data?.result?.filter((notif) => !notif.read).length || 0;
-
-  // Show only the last 5 notifications
-  const displayedNotifications = notifications?.data?.result?.slice(-5);
-
-  console.log(displayedNotifications);
   return (
     <ConfigProvider
       theme={{
@@ -142,9 +99,19 @@ function NotificationPopover() {
           <>
             <div className="flex justify-between items-center px-4 py-2 border-b border-gray-700">
               <h3 className="text-white font-medium">Notifications</h3>
+              {displayedNotifications.some((item) => !item.read) && (
+                <Button
+                  size="small"
+                  onClick={handleReadAll}
+                  loading={readAllLoading}
+                  className="text-xs"
+                >
+                  Mark all as read
+                </Button>
+              )}
             </div>
             <div
-              className="overflow-y-auto  px-2 py-1  
+              className="overflow-y-auto px-2 py-1
               [&::-webkit-scrollbar]:w-1
                     [&::-webkit-scrollbar-track]:rounded-full
                     [&::-webkit-scrollbar-track]:bg-gray-100
@@ -193,6 +160,7 @@ function NotificationPopover() {
                       }}
                       className="text-gray-400 hover:text-white"
                       title="Mark as read"
+                      disabled={item.read}
                     >
                       <MdOutlineMarkEmailRead size={16} />
                     </button>
@@ -238,6 +206,6 @@ function NotificationPopover() {
       </div>
     </ConfigProvider>
   );
-}
+};
 
 export default NotificationPopover;

@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { Table, Avatar, ConfigProvider } from "antd";
-import { IoEye } from "react-icons/io5";
 
 import { useGetOrderQuery } from "../../../redux/apiSlices/orderSlice";
 
@@ -33,7 +32,6 @@ function SellingOvervierw() {
       : "N/A",
   }));
 
-  // Define table columns
   const columns = [
     {
       title: "Order#",
@@ -61,8 +59,7 @@ function SellingOvervierw() {
       dataIndex: "amount",
       key: "amount",
       render: (amount) => {
-        // Convert to number and ensure 2 decimal places
-        const numericAmount = parseFloat(amount.replace("$", "")); // Remove $ if present
+        const numericAmount = parseFloat(amount.replace("$", ""));
         return <p>{isNaN(numericAmount) ? "N/A" : numericAmount.toFixed(2)}</p>;
       },
     },
@@ -109,10 +106,11 @@ function SellingOvervierw() {
       }}
     >
       <Table
+        loading={false}
         dataSource={dataSource}
         columns={columns}
         pagination={false}
-        rowKey="key" // Ensure unique row key
+        rowKey="key"
       />
     </ConfigProvider>
   );
