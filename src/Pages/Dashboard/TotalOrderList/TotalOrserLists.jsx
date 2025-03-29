@@ -97,8 +97,8 @@ function TotalOrserLists() {
           size="middle"
           pagination={{
             onChange: (page) => setPage(page),
-            pageSize: data?.data?.meta?.limit,
-            total: data?.data?.meta?.total,
+            pageSize: data?.data?.pagination?.limit,
+            total: data?.data?.pagination?.total,
           }}
         />
       </div>
