@@ -20,6 +20,8 @@ const Sidebar = ({ isCollapsed }) => {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("Vendor");
+    // localStorage.clear();
     navigate("/auth/login");
   };
 

@@ -30,6 +30,8 @@ function OrderManagement() {
   const [updateOrderStatus, { isLoading: isUpdating }] =
     useUpdateOrderStatusMutation();
 
+  console.log("OrderManagement", orderList);
+
   useEffect(() => {
     if (orderList?.data?.orders) {
       const formattedData = orderList.data.orders.map((order, index) => ({
@@ -220,8 +222,8 @@ function OrderManagement() {
             size="middle"
             pagination={{
               onChange: (page) => setPage(page),
-              pageSize: orderList?.data?.meta?.limit,
-              total: orderList?.data?.meta?.total,
+              pageSize: orderList?.data?.pagination?.limit,
+              total: orderList?.data?.pagination?.total,
             }}
           />
         </div>

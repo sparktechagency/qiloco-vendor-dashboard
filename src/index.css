@@ -97,14 +97,6 @@ textarea::placeholder {
 .ant-menu-light .ant-menu-item a:hover {
   color: white !important;
 }
-/* .ant-menu-submenu .ant-menu-submenu-inline .ant-menu-submenu-open {
-  background-color: #ffc301;
-} */
-
-/* .ant-menu-item {
-  background-color: #ffffff !important;
-  color: black !important;
-} */
 
 .ant-menu-item-selected {
   background-color: #a11d26 !important;
@@ -251,17 +243,11 @@ textarea::placeholder {
   border-radius: 5px;
 }
 
-/* .ant-pagination .ant-pagination-item a {
-  color: white !important;
-  border: none !important;
-} */
-
 .ant-pagination .ant-pagination-item a:hover {
   background-color: #a11d26 !important;
   color: white !important;
 
   border-radius: 5px !important;
-  /* transform: scale(1); */
 }
 
 .ant-select-selection-item {
