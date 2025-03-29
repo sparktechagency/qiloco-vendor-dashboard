@@ -1,5 +1,5 @@
 import { Button, Checkbox, Form, Input, ConfigProvider, message } from "antd";
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLoginMutation } from "../../redux/apiSlices/authSlice";
 import Spinner from "../../components/common/Spinner";
@@ -7,6 +7,21 @@ import Spinner from "../../components/common/Spinner";
 const Login = () => {
   const navigate = useNavigate();
   const [login, { isLoading, error }] = useLoginMutation();
+
+  // Check if "Remember me" was selected previously
+  const savedEmail = localStorage.getItem("savedEmail");
+  const savedPassword = localStorage.getItem("savedPassword");
+
+  const [form] = Form.useForm();
+
+  useEffect(() => {
+    if (savedEmail && savedPassword) {
+      form.setFieldsValue({
+        email: savedEmail,
+        password: savedPassword,
+      });
+    }
+  }, [savedEmail, savedPassword, form]);
 
   const onFinish = async (values) => {
     console.log(values);
@@ -19,6 +34,16 @@ const Login = () => {
       console.log("Login Success:", response?.data);
       localStorage.setItem("token", response?.data?.token);
       localStorage.setItem("Vendor", response?.data?.user?.role);
+
+      // If "Remember me" is checked, save email and password in localStorage
+      if (values.remember) {
+        localStorage.setItem("savedEmail", values.email);
+        localStorage.setItem("savedPassword", values.password);
+      } else {
+        // Remove saved email and password from localStorage if "Remember me" is not checked
+        localStorage.removeItem("savedEmail");
+        localStorage.removeItem("savedPassword");
+      }
 
       if (response?.data?.user?.role === "VENDOR") {
         navigate("/");
@@ -48,7 +73,7 @@ const Login = () => {
           },
         }}
       >
-        <Form onFinish={onFinish} layout="vertical">
+        <Form form={form} onFinish={onFinish} layout="vertical">
           <Form.Item
             name="email"
             label={
@@ -125,13 +150,11 @@ const Login = () => {
                 color: "white",
                 fontWeight: "400px",
                 fontSize: "18px",
-
                 marginTop: 20,
               }}
               className="flex items-center justify-center bg-quilocoD hover:bg-quilocoD/90 rounded-lg text-base"
             >
               {isLoading ? <Spinner /> : "Sign in"}
-              {/* Sign in */}
             </button>
           </Form.Item>
         </Form>
