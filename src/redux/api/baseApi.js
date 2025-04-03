@@ -12,10 +12,14 @@
 // export const imageUrl = "http://10.0.70.126:6007";
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { getBaseUrl } from "../../utils/baseUrl";
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: "http://10.0.60.126:6007",
+  baseUrl: getBaseUrl(),
+  // baseUrl: "http://10.0.60.126:6007",
+  // credentials: "include",
   prepareHeaders: (headers) => {
+    headers.set("ngrok-skip-browser-warning", "true");
     const token = localStorage.getItem("token");
     if (token) {
       try {
@@ -28,7 +32,8 @@ const baseQuery = fetchBaseQuery({
   },
 });
 
-export const imageUrl = "http://10.0.60.126:6007";
+export const imageUrl = getBaseUrl();
+// export const imageUrl = "http://10.0.60.126:6007";
 
 export const api = createApi({
   baseQuery,

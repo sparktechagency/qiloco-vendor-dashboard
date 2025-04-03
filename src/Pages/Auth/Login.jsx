@@ -60,7 +60,7 @@ const Login = () => {
     <div>
       <div className="text-center mb-8">
         <h1 className="text-[25px] text-white font-semibold mb-6">
-          Login to Account
+          Login to Vendor
         </h1>
         <p className="text-[#A3A3A3]">
           Please enter your email and password to continue
