@@ -36,14 +36,6 @@ const Login = () => {
       localStorage.setItem("Vendor", response?.data?.user?.role);
 
       // If "Remember me" is checked, save email and password in localStorage
-      if (values.remember) {
-        localStorage.setItem("savedEmail", values.email);
-        localStorage.setItem("savedPassword", values.password);
-      } else {
-        // Remove saved email and password from localStorage if "Remember me" is not checked
-        localStorage.removeItem("savedEmail");
-        localStorage.removeItem("savedPassword");
-      }
 
       if (response?.data?.user?.role === "VENDOR") {
         navigate("/");
@@ -124,14 +116,6 @@ const Login = () => {
           </Form.Item>
 
           <div className="flex items-center justify-between">
-            <Form.Item
-              style={{ marginBottom: 0 }}
-              name="remember"
-              valuePropName="checked"
-            >
-              <Checkbox className="text-[#A3A3A3]">Remember me</Checkbox>
-            </Form.Item>
-
             <a
               className="login-form-forgot text-white hover:text-[#A3A3A3] font-semibold"
               href="/auth/forgot-password"
