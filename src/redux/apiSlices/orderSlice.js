@@ -14,9 +14,9 @@ const orderSlice = api.injectEndpoints({
     }),
 
     getOrder: builder.query({
-      query: () => ({
+      query: (page) => ({
         method: "GET",
-        url: "/api/v1/orders",
+        url: `/api/v1/orders?page=${page}`,
       }),
     }),
     providesTags: ["Status"],

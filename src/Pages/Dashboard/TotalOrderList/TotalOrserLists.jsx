@@ -96,9 +96,14 @@ function TotalOrserLists() {
           loading={isLoading}
           size="middle"
           pagination={{
+            current: page,
+            showSizeChanger: false,
             onChange: (page) => setPage(page),
             pageSize: data?.data?.pagination?.limit,
             total: data?.data?.pagination?.total,
+            showTotal: (total, range) => (
+              <span className="text-white">{`${range[0]}-${range[1]} of ${total} items`}</span>
+            ),
           }}
         />
       </div>

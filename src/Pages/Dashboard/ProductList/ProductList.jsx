@@ -184,9 +184,14 @@ function ProductList() {
             size="middle"
             loading={isLoading}
             pagination={{
+              current: page,
               onChange: (page) => setPage(page),
+              showSizeChanger: false,
               pageSize: data?.data?.meta?.limit,
               total: data?.data?.meta?.total,
+              showTotal: (total, range) => (
+                <span className="text-white">{`${range[0]}-${range[1]} of ${total} items`}</span>
+              ),
             }}
           />
         </div>
