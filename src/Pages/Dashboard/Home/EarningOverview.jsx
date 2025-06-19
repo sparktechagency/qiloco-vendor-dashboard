@@ -49,9 +49,12 @@ export default function EarningOverview() {
           <div className="flex items-center justify-between w-full pr-5 mb-4">
             <h2 className="text-lg font-medium text-white">Earning Overview</h2>
             <div className="flex text-white gap-5">
-              <p className="font-light">Monthly growth</p>
+              <p className="font-light mt-1">Monthly growth</p>
               <span className="font-bold">
-                {productChart?.data?.yearlyGrowth || "0.00"}%
+                {productChart?.data?.yearlyGrowth
+                  ? Number(productChart.data.yearlyGrowth).toFixed(2)
+                  : "0.00"}
+                %
               </span>
             </div>
           </div>

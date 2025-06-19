@@ -67,8 +67,6 @@ function ProdductDetailsModal({ isModalOpen, setIsModalOpen, record }) {
                     <span className="text-white">{item.value || "N/A"}</span>
                   </p>
                 ))}
-
-                <Button className="w-1/2 h-5">Buy now</Button>
               </div>
             </div>
           </div>
