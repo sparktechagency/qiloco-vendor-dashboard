@@ -1,17 +1,32 @@
 import { Navigate } from "react-router-dom";
+import { isTokenValid, isVendorRole } from "../utils/baseUrl";
 
 const ProtectedRoute = ({ children }) => {
-  const token = localStorage.getItem("Vendor");
+  const token = localStorage.getItem("token");
+  const vendorRole = localStorage.getItem("Vendor");
 
-  // Array of allowed roles
-  const allowedRoles = ["VENDOR"];
-
-  // Check if the token is in the allowed roles array
-  if (!allowedRoles.includes(token)) {
+  // Check if token exists and is valid
+  if (!token || !isTokenValid(token)) {
+    // Clear invalid data
+    localStorage.clear();
     return <Navigate to="/auth/login" replace />;
-  } else {
-    return children;
   }
+
+  // Check if user has VENDOR role
+  if (!isVendorRole(token)) {
+    // Clear invalid data
+    localStorage.clear();
+    return <Navigate to="/auth/login" replace />;
+  }
+
+  // Additional check: ensure localStorage role matches token role
+  if (vendorRole !== "VENDOR") {
+    // Clear invalid data
+    localStorage.clear();
+    return <Navigate to="/auth/login" replace />;
+  }
+
+  return children;
 };
 
 export default ProtectedRoute;

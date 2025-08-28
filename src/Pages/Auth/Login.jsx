@@ -32,12 +32,23 @@ const Login = () => {
       }).unwrap();
 
       console.log("Login Success:", response?.data);
-      localStorage.setItem("token", response?.data?.token);
-      localStorage.setItem("Vendor", response?.data?.user?.role);
+
+      // Validate the token before storing
+      const token = response?.data?.token;
+      const userRole = response?.data?.user?.role;
+
+      if (!token || userRole !== "VENDOR") {
+        message.error("Invalid credentials or unauthorized access");
+        return;
+      }
+
+      // Store token and role
+      localStorage.setItem("token", token);
+      localStorage.setItem("Vendor", userRole);
 
       // If "Remember me" is checked, save email and password in localStorage
 
-      if (response?.data?.user?.role === "VENDOR") {
+      if (userRole === "VENDOR") {
         navigate("/");
       } else {
         message.error("Unauthorized People");

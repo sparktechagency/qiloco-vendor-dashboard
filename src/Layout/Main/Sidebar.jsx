@@ -9,6 +9,7 @@ import { FaRegListAlt } from "react-icons/fa";
 import { RiMoneyDollarCircleLine, RiSettings5Line } from "react-icons/ri";
 import qilocoLogo from "../../assets/quiloco/qilocoLogo.png";
 import { LuBoxes } from "react-icons/lu";
+import { forceLogout } from "../../utils/baseUrl";
 
 const Sidebar = ({ isCollapsed }) => {
   const location = useLocation();
@@ -18,11 +19,28 @@ const Sidebar = ({ isCollapsed }) => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    // localStorage.removeItem("token");
-    // localStorage.removeItem("Vendor");
-    localStorage.clear();
-    navigate("/auth/login");
+    forceLogout();
   };
+
+  // Listen for logout events from other tabs
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      if (e.key === "logoutEvent" && e.newValue) {
+        // Clear localStorage
+        localStorage.clear();
+        // Navigate to login page
+        navigate("/auth/login");
+      }
+    };
+
+    // Listen for storage events (other tabs)
+    window.addEventListener("storage", handleStorageChange);
+
+    // Cleanup
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, [navigate]);
 
   const menuItems = [
     {

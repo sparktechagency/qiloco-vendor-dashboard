@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 import { Outlet } from "react-router-dom";
+import TokenValidator from "../../components/common/TokenValidator";
 
 const Main = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -12,6 +13,9 @@ const Main = () => {
 
   return (
     <div className="h-screen w-screen flex bg-[#f8f8f8]">
+      {/* Token Validator for automatic logout */}
+      <TokenValidator />
+
       {/* Sidebar */}
       <Sidebar isCollapsed={isCollapsed} />
 
