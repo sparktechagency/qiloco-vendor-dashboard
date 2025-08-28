@@ -1,4 +1,4 @@
-import { jwtDecode } from "jwt-decode";
+import jwtDecode from "jwt-decode";
 
 export const getBaseUrl = () => {
   return "http://145.223.75.211:6007"; // replace with your API base URL
