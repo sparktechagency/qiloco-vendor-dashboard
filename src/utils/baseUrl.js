@@ -1,3 +1,5 @@
+import { jwtDecode } from "jwt-decode";
+
 export const getBaseUrl = () => {
   return "http://145.223.75.211:6007"; // replace with your API base URL
   // return "http://10.10.7.62:6007"; // replace with your API base URL
@@ -8,20 +10,9 @@ export const decodeJWT = (token) => {
   try {
     if (!token) return null;
 
-    // Split the token and get the payload part
-    const base64Url = token.split(".")[1];
-    if (!base64Url) return null;
-
-    // Convert base64url to base64 and decode
-    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-    const jsonPayload = decodeURIComponent(
-      atob(base64)
-        .split("")
-        .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
-        .join("")
-    );
-
-    return JSON.parse(jsonPayload);
+    // Use jwt-decode library for secure and reliable decoding
+    const decoded = jwtDecode(token);
+    return decoded;
   } catch (error) {
     console.error("Error decoding JWT:", error);
     return null;
